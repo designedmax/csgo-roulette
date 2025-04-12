@@ -17,25 +17,6 @@
     </div>
     <div id="result" class="result"></div>
   </div>
-
-<script async src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-  // Инициализация Telegram Web App
-  window.Telegram.WebApp.ready();
-
-  // Получение данных о пользователе
-  const user = window.Telegram.WebApp.initDataUnsafe;
-
-  // Проверка на успешное получение данных пользователя
-  if (user) {
-    // Извлекаем имя пользователя
-    const userName = user.first_name || "Игрок";
-    // Обновляем приветствие на странице
-    document.getElementById("greeting").innerText = `Привет, ${userName}!`;
-  } else {
-    console.log("Не удалось получить данные пользователя.");
-  }
-</script>
   <script src="/script.js"></script>
 </body>
 </html>
