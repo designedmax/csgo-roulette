@@ -1,23 +1,45 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CS:GO Roulette</title>
-  <link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS:GO Рулетка</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="app.js" defer></script>
 </head>
 <body>
-  <div id="welcomeMessage">
-    <p id="userNameDisplay">Привет, игрок!</p> <!-- Место для вывода имени -->
-  </div>
+    <div class="container">
+        <header>
+            <div class="user-info">
+                <img id="user-avatar" src="" alt="Аватар" class="profile-pic">
+                <div class="user-greeting">
+                    <h1>Привет, <span id="username">Игрок</span>!</h1>
+                    <p>Крути рулетку и выигрывай скины!</p>
+                </div>
+            </div>
+        </header>
 
-  <div id="roulette">
-  <button class="roulette-button" id="roulette100">Рулетка 100 руб</button>
-  <button class="roulette-button" id="roulette300">Рулетка 300 руб</button>
-  <button class="roulette-button" id="roulette500">Рулетка 500 руб</button>
-  <button class="roulette-button" id="roulette1000">Рулетка 1000 руб</button>
-</div>
+        <main>
+            <h2>Выберите ставку:</h2>
+            <div class="roulette-options">
+                <button class="roulette-btn" data-price="100">100 ₽</button>
+                <button class="roulette-btn" data-price="300">300 ₽</button>
+                <button class="roulette-btn" data-price="500">500 ₽</button>
+                <button class="roulette-btn" data-price="1000">1000 ₽</button>
+            </div>
 
-  <script src="/script.js"></script>
+            <div id="result" class="hidden">
+                <h3>Результат:</h3>
+                <div id="skin-result"></div>
+                <button id="spin-again">Крутить снова</button>
+            </div>
+
+            <div id="history-section">
+                <h3>История ставок</h3>
+                <div id="history-list"></div>
+            </div>
+        </main>
+    </div>
 </body>
 </html>
