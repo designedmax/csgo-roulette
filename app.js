@@ -1,231 +1,128 @@
-// Глобальные переменные
-let allSkins = [];
-let currentBet = 0;
+// Инициализация Telegram WebApp
+const tg = window.Telegram.WebApp;
+tg.expand(); // Раскрываем на весь экран
 
-// Инициализация приложения
-document.addEventListener('DOMContentLoaded', () => {
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+// Получаем данные пользователя
+const user = tg.initDataUnsafe.user;
+let userName = "Игрок"; // Значение по умолчанию
 
-    // Загрузка данных пользователя
-    loadUserData();
+if (user) {
+    if (user.first_name) userName = user.first_name;
+    if (user.username) userName += ` (@${user.username})`;
+}
 
-    // Загрузка скинов
-    loadSkins();
+// Отображаем имя и аватар
+document.getElementById("username").textContent = userName;
+document.getElementById("user-avatar").src = user?.photo_url || "https://via.placeholder.com/50";
 
-    // Инициализация страницы
-    if (document.getElementById('slider-track')) {
-        initRoulettePage();
+// Загрузка скинов (заглушка)
+const skins = [
+    { name: "AK-47 | Красная линия", price: 500 },
+    { name: "AWP | Фея", price: 1000 },
+    { name: "M4A4 | Крушитель", price: 300 },
+    { name: "Нож | Бабочка", price: 5000 },
+];
+
+// Крутим рулетку
+function spinRoulette(price) {
+    const winChance = 0.4; // 40% шанс
+    const isWin = Math.random() < winChance;
+    const resultElement = document.getElementById("skin-result");
+    const resultContainer = document.getElementById("result");
+    const rouletteButtons = document.querySelectorAll(".roulette-btn");
+
+    // Блокируем кнопки на время анимации
+    rouletteButtons.forEach(btn => btn.disabled = true);
+
+    // Анимация вращения
+    resultElement.innerHTML = `<div class="spinner">🎮</div>`;
+    resultContainer.classList.remove("hidden");
+
+    // Имитация вращения (3 секунды)
+    let spinTime = 0;
+    const spinInterval = setInterval(() => {
+        spinTime += 100;
+        const emojis = ["🔫", "💣", "🔪", "💰", "🎯"];
+        resultElement.innerHTML = `<div class="spinner">${emojis[Math.floor(Math.random() * emojis.length)]}</div>`;
+
+        if (spinTime >= 3000) {
+            clearInterval(spinInterval);
+            showResult(isWin, price);
+            rouletteButtons.forEach(btn => btn.disabled = false);
+        }
+    }, 100);
+}
+
+// Показываем результат
+function showResult(isWin, betAmount) {
+    const resultElement = document.getElementById("skin-result");
+    const randomSkin = skins[Math.floor(Math.random() * skins.length)];
+
+    if (isWin) {
+        resultElement.innerHTML = `
+            <p>🎉 Поздравляем! Вы выиграли:</p>
+            <h4>${randomSkin.name}</h4>
+            <p>Цена: ${randomSkin.price} ₽</p>
+        `;
+        saveToHistory("win", randomSkin.name, randomSkin.price, betAmount);
+    } else {
+        resultElement.innerHTML = "<p>😢 К сожалению, вы ничего не выиграли.</p>";
+        saveToHistory("lose", "Ничего", 0, betAmount);
     }
+}
 
-    // Инициализация профиля
-    if (document.getElementById('profile-name')) {
-        initProfilePage();
-    }
+// Сохраняем ставку в историю
+function saveToHistory(status, skinName, skinPrice, betAmount) {
+    const history = JSON.parse(localStorage.getItem("csgoRouletteHistory")) || [];
+    const newEntry = {
+        date: new Date().toLocaleString(),
+        bet: betAmount,
+        status: status,
+        skin: skinName,
+        prize: status === "win" ? skinPrice : 0,
+    };
+    history.unshift(newEntry);
+    localStorage.setItem("csgoRouletteHistory", JSON.stringify(history));
+    updateHistoryUI();
+}
 
-    // Навигация
-    setupNavigation();
+// Обновляем историю на экране
+function updateHistoryUI() {
+    const historyList = document.getElementById("history-list");
+    const history = JSON.parse(localStorage.getItem("csgoRouletteHistory")) || [];
+    
+    historyList.innerHTML = history.length === 0 
+        ? "<p>Ставок пока нет.</p>"
+        : history.map(entry => `
+            <div class="history-entry ${entry.status}">
+                <span>${entry.date}</span>
+                <span>Ставка: ${entry.bet} ₽</span>
+                <span>${entry.status === "win" ? "🏆 " + entry.skin : "❌ Проигрыш"}</span>
+            </div>
+        `).join("");
+}
+
+// Обработчики кнопок
+document.querySelectorAll(".roulette-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const price = parseInt(btn.dataset.price);
+        tg.showPopup({
+            title: "Подтверждение ставки",
+            message: `Вы уверены, что хотите поставить ${price} ₽?`,
+            buttons: [
+                { id: "confirm", type: "ok", text: "Да" },
+                { id: "cancel", type: "cancel", text: "Нет" },
+            ],
+        }, (buttonId) => {
+            if (buttonId === "confirm") spinRoulette(price);
+        });
+    });
 });
 
-// Загрузка данных пользователя из Telegram
-function loadUserData() {
-    const tg = window.Telegram.WebApp;
-    if (tg.initDataUnsafe.user) {
-        const user = tg.initDataUnsafe.user;
-        const avatarElements = document.querySelectorAll('#user-avatar, #profile-avatar');
-        const nameElements = document.querySelectorAll('#profile-name');
-        
-        avatarElements.forEach(el => {
-            el.src = user.photo_url || 'assets/default-avatar.jpg';
-        });
-        
-        if (nameElements.length > 0) {
-            const userName = user.first_name || 'Игрок';
-            nameElements[0].textContent = user.username ? `${userName} (@${user.username})` : userName;
-        }
-    }
-}
+// Кнопка "Крутить снова"
+document.getElementById("spin-again").addEventListener("click", () => {
+    document.getElementById("result").classList.add("hidden");
+});
 
-// Загрузка скинов из CSGO Backpack API
-async function loadSkins() {
-    try {
-        const response = await fetch('https://csgobackpack.net/api/GetItemsList/v2/');
-        const data = await response.json();
-        allSkins = Object.values(data.items_list)
-            .filter(skin => skin.icon_url && skin.icon_url.includes('steamcdn'))
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 100); // Берем 100 случайных скинов
-    } catch (error) {
-        console.error("Ошибка загрузки скинов:", error);
-        // Запасные скины
-        allSkins = [
-            { 
-                name: "AK-47 | Красная линия", 
-                icon_url: "https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47_cu_ak47_asiimov_light_large.091fce6d0a96b8a876f25252d147c537ed72e315.png"
-            },
-            // ... другие скины
-        ];
-    }
-}
-
-// Инициализация страницы рулетки
-function initRoulettePage() {
-    const urlParams = new URLSearchParams(window.location.search);
-    currentBet = parseInt(document.getElementById('spin-btn')?.dataset.price) || 100;
-    
-    // Заполняем слайдер
-    const sliderTrack = document.getElementById('slider-track');
-    if (sliderTrack && allSkins.length > 0) {
-        // Берем 20 случайных скинов для демонстрации
-        const randomSkins = [...allSkins].sort(() => 0.5 - Math.random()).slice(0, 20);
-        
-        randomSkins.forEach(skin => {
-            const img = document.createElement('img');
-            img.src = skin.icon_url;
-            img.alt = skin.name;
-            img.title = skin.name;
-            sliderTrack.appendChild(img);
-        });
-    }
-
-    // Обработчик кнопки "Крутить"
-    document.getElementById('spin-btn')?.addEventListener('click', startSpin);
-}
-
-// Анимация вращения рулетки
-function startSpin() {
-    const spinBtn = document.getElementById('spin-btn');
-    const sliderTrack = document.getElementById('slider-track');
-    
-    if (!spinBtn || !sliderTrack) return;
-
-    spinBtn.disabled = true;
-    let spinCount = 0;
-    const maxSpin = 50; // Количество прокруток
-    const spinSpeed = 50; // Интервал в ms
-    
-    // Сброс позиции
-    sliderTrack.style.transition = 'none';
-    sliderTrack.style.transform = 'translateX(0)';
-    
-    // Запуск анимации
-    const spinInterval = setInterval(() => {
-        spinCount++;
-        const currentTransform = parseInt(sliderTrack.style.transform?.replace('translateX(', '').replace('px)', '') || 0;
-        const newTransform = currentTransform - 100;
-        sliderTrack.style.transform = `translateX(${newTransform}px)`;
-        
-        // Завершение анимации
-        if (spinCount >= maxSpin) {
-            clearInterval(spinInterval);
-            setTimeout(() => {
-                showResult();
-                spinBtn.disabled = false;
-            }, 500);
-        }
-    }, spinSpeed);
-}
-
-// Показать результат вращения
-function showResult() {
-    const winChances = {
-        100: 0.4,
-        300: 0.3,
-        500: 0.25,
-        1000: 0.15
-    };
-    
-    const isWin = Math.random() < winChances[currentBet];
-    const randomSkin = allSkins[Math.floor(Math.random() * allSkins.length)];
-    
-    // Сохраняем результат
-    saveToHistory(
-        isWin ? 'win' : 'lose',
-        isWin ? randomSkin.name : 'Ничего',
-        isWin ? Math.floor(currentBet * 2) : 0,
-        currentBet,
-        window.location.pathname.split('/').pop()
-    );
-    
-    // Показываем уведомление
-    alert(isWin ? 
-        `🎉 Вы выиграли ${randomSkin.name}!` : 
-        '😢 Вы проиграли'
-    );
-}
-
-// Сохранить результат в историю
-function saveToHistory(status, skin, prize, bet, section) {
-    const history = JSON.parse(localStorage.getItem('csgoRouletteHistory')) || [];
-    history.unshift({
-        date: new Date().toLocaleString(),
-        status,
-        skin,
-        prize,
-        bet,
-        section: section.replace('.html', '')
-    });
-    localStorage.setItem('csgoRouletteHistory', JSON.stringify(history));
-    updateHistoryUI();
-}
-
-// Обновить историю на странице
-function updateHistoryUI() {
-    const history = JSON.parse(localStorage.getItem('csgoRouletteHistory')) || [];
-    
-    // Обновляем историю на странице рулетки
-    const historyList = document.getElementById('history-list');
-    if (historyList) {
-        const currentPage = window.location.pathname.split('/').pop();
-        const filteredHistory = history.filter(item => item.section === currentPage.replace('.html', ''));
-        
-        historyList.innerHTML = filteredHistory.length > 0 
-            ? filteredHistory.map(item => `
-                <div class="history-entry ${item.status}">
-                    <span>${item.date}</span>
-                    <span>${item.status === 'win' ? '🏆 ' + item.skin : '❌ Проигрыш'}</span>
-                </div>
-            `).join('')
-            : '<p>История пуста</p>';
-    }
-    
-    // Обновляем полную историю в профиле
-    const fullHistoryList = document.getElementById('full-history-list');
-    if (fullHistoryList) {
-        fullHistoryList.innerHTML = history.length > 0
-            ? history.map(item => `
-                <div class="history-entry ${item.status}">
-                    <span>${item.date}</span>
-                    <span>${item.section}₽</span>
-                    <span>${item.status === 'win' ? '🏆 ' + item.skin : '❌ Проигрыш'}</span>
-                </div>
-            `).join('')
-            : '<p>История пуста</p>';
-    }
-    
-    // Обновляем статистику в профиле
-    const winsCount = document.getElementById('wins-count');
-    const losesCount = document.getElementById('loses-count');
-    if (winsCount && losesCount) {
-        winsCount.textContent = history.filter(item => item.status === 'win').length;
-        losesCount.textContent = history.filter(item => item.status === 'lose').length;
-    }
-}
-
-// Инициализация страницы профиля
-function initProfilePage() {
-    updateHistoryUI();
-}
-
-// Настройка навигации
-function setupNavigation() {
-    // Кнопка "Профиль"
-    document.getElementById('profile-btn')?.addEventListener('click', () => {
-        window.location.href = 'profile.html';
-    });
-    
-    // Кнопка "Назад" в профиле
-    document.getElementById('back-btn')?.addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
-}
+// Загружаем историю при старте
+updateHistoryUI();
