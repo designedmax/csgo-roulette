@@ -14,15 +14,16 @@ document.querySelectorAll('.roulette-option').forEach(option => {
 
 // Инициализация Telegram Web App
 window.Telegram.WebApp.onEvent('ready', function() {
+  // Получаем данные о пользователе через initDataUnsafe
   const user = window.Telegram.WebApp.initDataUnsafe;
 
-  // Проверка на наличие данных
+  // Проверяем, есть ли имя пользователя
   if (user && user.first_name) {
-    // Извлекаем имя пользователя и обновляем приветствие
     const userName = user.first_name;
+    // Обновляем приветствие с именем пользователя
     document.getElementById("greeting").innerText = `Привет, ${userName}!`;
   } else {
-    // Если данных нет, выводим стандартное приветствие
+    // Если имя не получено, показываем стандартное приветствие
     document.getElementById("greeting").innerText = "Привет, Игрок!";
   }
 });
