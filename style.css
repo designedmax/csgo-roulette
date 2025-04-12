@@ -1,0 +1,45 @@
+{\rtf1\ansi\ansicpg1251\cocoartf2821
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 body \{\
+  font-family: Arial, sans-serif;\
+  background-color: #f0f0f0;\
+  display: flex;\
+  justify-content: center;\
+  align-items: center;\
+  height: 100vh;\
+  margin: 0;\
+\}\
+\
+.container \{\
+  text-align: center;\
+\}\
+\
+.roulette-options \{\
+  margin-top: 20px;\
+\}\
+\
+.roulette-option \{\
+  background-color: #4CAF50;\
+  color: white;\
+  border: none;\
+  padding: 15px 32px;\
+  margin: 10px;\
+  cursor: pointer;\
+  font-size: 18px;\
+  border-radius: 5px;\
+\}\
+\
+.roulette-option:hover \{\
+  background-color: #45a049;\
+\}\
+\
+.result \{\
+  margin-top: 30px;\
+  font-size: 24px;\
+  font-weight: bold;\
+\}}
