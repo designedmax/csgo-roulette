@@ -1,73 +1,42 @@
-/* Общее оформление */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: Arial, sans-serif;
-  background-color: #f8f9fa;
+  background-color: #f4f4f4;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  flex-direction: column;
-  text-align: center;
+  margin: 0;
 }
 
 .container {
+  text-align: center;
   background-color: white;
-  padding: 30px;
+  padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-h1 {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 20px;
 }
 
 #roulette {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .roulette-btn {
-  padding: 10px 20px;
   font-size: 16px;
-  background-color: #007bff;
+  padding: 10px 20px;
+  margin: 5px;
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .roulette-btn:hover {
-  background-color: #0056b3;
+  background-color: #45a049;
 }
 
 #result {
-  font-size: 18px;
-  color: #333;
   margin-top: 20px;
-}
-
-@media (max-width: 600px) {
-  .container {
-    width: 90%;
-  }
-
-  h1 {
-    font-size: 20px;
-  }
-
-  .roulette-btn {
-    font-size: 14px;
-  }
+  font-size: 18px;
+  font-weight: bold;
 }
