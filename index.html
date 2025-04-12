@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CS:GO Рулетка</title>
-  <link rel="stylesheet" href="style.css">
+  <title>CS:GO Roulette</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1 id="greeting">Привет, Игрок!</h1>
-    <div id="roulette">
-      <button class="roulette-btn" onclick="playRoulette(100)">100 руб</button>
-      <button class="roulette-btn" onclick="playRoulette(300)">300 руб</button>
-      <button class="roulette-btn" onclick="playRoulette(500)">500 руб</button>
-      <button class="roulette-btn" onclick="playRoulette(1000)">1000 руб</button>
-    </div>
-    <div id="result"></div>
+  <div id="welcomeMessage">
+    <p id="userNameDisplay">Привет, игрок!</p> <!-- Место для вывода имени -->
+  </div>
+
+  <div id="roulette">
+    <button class="roulette-button" id="roulette100">Рулетка 100 руб</button>
+    <button class="roulette-button" id="roulette300">Рулетка 300 руб</button>
+    <button class="roulette-button" id="roulette500">Рулетка 500 руб</button>
+    <button class="roulette-button" id="roulette1000">Рулетка 1000 руб</button>
   </div>
 
   <script src="script.js"></script>
