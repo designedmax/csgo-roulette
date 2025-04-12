@@ -1,1 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="user-header">
+                <img id="user-avatar" src="assets/default-avatar.jpg" alt="Аватар">
+                <button id="back-btn" class="btn-back">Назад</button>
+            </div>
+        </header>
 
+        <main>
+            <div class="profile-info">
+                <img id="profile-avatar" src="" alt="Аватар">
+                <h1 id="profile-name">Игрок</h1>
+                <div class="stats">
+                    <div class="stat">
+                        <span>Победы</span>
+                        <span id="wins-count">0</span>
+                    </div>
+                    <div class="stat">
+                        <span>Поражения</span>
+                        <span id="loses-count">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="full-history">
+                <h2>Полная история</h2>
+                <div id="full-history-list"></div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
