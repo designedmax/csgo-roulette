@@ -23,14 +23,18 @@
   // Инициализация Telegram Web App
   window.Telegram.WebApp.ready();
 
-  // Получение данных пользователя
+  // Получение данных о пользователе
   const user = window.Telegram.WebApp.initDataUnsafe;
 
-  // Извлекаем имя пользователя
-  const userName = user.first_name;
-
-  // Обновляем элемент на странице с приветствием
-  document.getElementById("greeting").innerText = `Привет, ${userName}!`;
+  // Проверка на успешное получение данных пользователя
+  if (user) {
+    // Извлекаем имя пользователя
+    const userName = user.first_name || "Игрок";
+    // Обновляем приветствие на странице
+    document.getElementById("greeting").innerText = `Привет, ${userName}!`;
+  } else {
+    console.log("Не удалось получить данные пользователя.");
+  }
 </script>
   <script src="/script.js"></script>
 </body>
