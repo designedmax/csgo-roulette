@@ -4,20 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS:GO Рулетка</title>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1 id="greeting">Привет, Игрок!</h1>
     <div id="roulette">
-      <button class="roulette-btn">100 руб</button>
-      <button class="roulette-btn">300 руб</button>
-      <button class="roulette-btn">500 руб</button>
-      <button class="roulette-btn">1000 руб</button>
+      <button class="roulette-btn" onclick="playRoulette(100)">100 руб</button>
+      <button class="roulette-btn" onclick="playRoulette(300)">300 руб</button>
+      <button class="roulette-btn" onclick="playRoulette(500)">500 руб</button>
+      <button class="roulette-btn" onclick="playRoulette(1000)">1000 руб</button>
     </div>
     <div id="result"></div>
   </div>
 
-  <script src="/script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
