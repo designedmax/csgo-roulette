@@ -1,5 +1,6 @@
 // Функция для получения имени пользователя
 function getUserName() {
+  // Проверка, доступен ли Telegram WebApp и данные о пользователе
   if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
     const user = window.Telegram.WebApp.initDataUnsafe;
     return user && user.user && user.user.first_name ? user.user.first_name : "Игрок";
