@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS:GO Roulette</title>
+    <title>CS:GO Рулетка</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="app.js" defer></script>
@@ -11,36 +11,33 @@
 <body>
     <div class="container">
         <header>
-            <div class="user-header">
-                <img id="user-avatar" src="assets/default-avatar.jpg" alt="Аватар">
-                <button id="profile-btn" class="btn-profile">Профиль</button>
+            <div class="user-info">
+                <img id="user-avatar" src="" alt="Аватар" class="profile-pic">
+                <div class="user-greeting">
+                    <h1>Привет, <span id="username">Игрок</span>!</h1>
+                    <p>Крути рулетку и выигрывай скины!</p>
+                </div>
             </div>
         </header>
 
         <main>
-            <h1 class="title">CS:GO Roulette</h1>
-            
-            <div class="roulette-cards">
-                <a href="roulette-100.html" class="roulette-card">
-                    <img src="https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_ak47_cu_ak47_asiimov_light_large.091fce6d0a96b8a876f25252d147c537ed72e315.png" alt="100₽">
-                    <h3>100 ₽</h3>
-                    <p>Шанс: 40%</p>
-                </a>
-                <a href="roulette-300.html" class="roulette-card">
-                    <img src="https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_awp_cu_awp_asimov_light_large.4c5c1c9a0e675d9c4f0d0e4e0e4e0e4e.png" alt="300₽">
-                    <h3>300 ₽</h3>
-                    <p>Шанс: 30%</p>
-                </a>
-                <a href="roulette-500.html" class="roulette-card">
-                    <img src="https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_m4a1_cu_m4a4_asiimov_light_large.5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d.png" alt="500₽">
-                    <h3>500 ₽</h3>
-                    <p>Шанс: 25%</p>
-                </a>
-                <a href="roulette-1000.html" class="roulette-card">
-                    <img src="https://steamcdn-a.akamaihd.net/apps/730/icons/econ/default_generated/weapon_knife_cu_karambit_marblefade_light_large.9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e.png" alt="1000₽">
-                    <h3>1000 ₽</h3>
-                    <p>Шанс: 15%</p>
-                </a>
+            <h2>Выберите ставку:</h2>
+            <div class="roulette-options">
+                <button class="roulette-btn" data-price="100">100 ₽</button>
+                <button class="roulette-btn" data-price="300">300 ₽</button>
+                <button class="roulette-btn" data-price="500">500 ₽</button>
+                <button class="roulette-btn" data-price="1000">1000 ₽</button>
+            </div>
+
+            <div id="result" class="hidden">
+                <h3>Результат:</h3>
+                <div id="skin-result"></div>
+                <button id="spin-again">Крутить снова</button>
+            </div>
+
+            <div id="history-section">
+                <h3>История ставок</h3>
+                <div id="history-list"></div>
             </div>
         </main>
     </div>
