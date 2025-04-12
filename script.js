@@ -1,27 +1,52 @@
+// Получаем токен из переменных окружения
+const apiKey = process.env.TELEGRAM_API_KEY;
+
 // Функция для получения имени пользователя
-function getUserName() {
-  // Проверка, доступен ли Telegram WebApp и данные о пользователе
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-    const user = window.Telegram.WebApp.initDataUnsafe;
-    return user && user.user && user.user.first_name ? user.user.first_name : "Игрок";
+async function getUserName() {
+  const response = await fetch(`https://api.telegram.org/bot${apiKey}/getUpdates`);
+  const data = await response.json();
+
+  if (data.ok && data.result.length > 0) {
+    const user = data.result[0].message.from;
+    const userName = user.first_name; // Имя пользователя
+    console.log("Имя пользователя: ", userName);
+    return userName;
+  } else {
+    console.log("Нет обновлений");
+    return "Привет, игрок!"; // Если данных нет, показываем стандартное сообщение
   }
-  return "Игрок";  // если нет доступа к данным
 }
 
-// Функция для запуска рулетки
-function playRoulette(amount) {
-  const chance = Math.random();  // генерируем случайное число от 0 до 1
-  const winChance = 0.4;  // шанс на победу 40%
+// Вызовем функцию и покажем имя пользователя
+getUserName().then(userName => {
+  document.getElementById("userNameDisplay").innerText = `Привет, ${userName}!`; // Выводим имя на странице
+});
 
-  const resultText = (chance < winChance) 
-    ? `Поздравляем! Вы выиграли скин за ${amount} руб!`
-    : `Увы, не повезло! Попробуйте снова за ${amount} руб.`;
+// Логика рулетки
+document.getElementById("roulette100").addEventListener("click", function() {
+  spinRoulette(100);
+});
 
-  document.getElementById("result").innerText = resultText;
-}
+document.getElementById("roulette300").addEventListener("click", function() {
+  spinRoulette(300);
+});
 
-// Обновляем приветствие с именем пользователя
-window.onload = function() {
-  const userName = getUserName();
-  document.getElementById("greeting").innerText = `Привет, ${userName}!`;
+document.getElementById("roulette500").addEventListener("click", function() {
+  spinRoulette(500);
+});
+
+document.getElementById("roulette1000").addEventListener("click", function() {
+  spinRoulette(1000);
+});
+
+// Функция для выполнения спина рулетки
+function spinRoulette(betAmount) {
+  const winChance = 0.4; // 40% шанс
+  const win = Math.random() < winChance;
+
+  if (win) {
+    alert(`Поздравляем! Вы выиграли скин на сумму ${betAmount} руб!`);
+  } else {
+    alert(`Увы, вы не выиграли. Попробуйте снова!`);
+  }
 }
