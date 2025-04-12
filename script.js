@@ -1,9 +1,6 @@
-// Получаем токен из переменных окружения
-const apiKey = process.env.TELEGRAM_API_KEY;
-
 // Функция для получения имени пользователя
 async function getUserName() {
-  const response = await fetch(`https://api.telegram.org/bot${apiKey}/getUpdates`);
+  const response = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_API_KEY}/getUpdates`);
   const data = await response.json();
 
   if (data.ok && data.result.length > 0) {
