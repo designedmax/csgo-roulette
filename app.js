@@ -21,6 +21,8 @@ const skins = [
     { name: "AWP | Фея", price: 1000 },
     { name: "M4A4 | Крушитель", price: 300 },
     { name: "Нож | Бабочка", price: 5000 },
+    { name: "Вилка | В жопу", price: 300 },
+    { name: "Фак | Нах", price: 100 },
 ];
 
 // Крутим рулетку
