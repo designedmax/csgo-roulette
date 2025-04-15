@@ -24,7 +24,6 @@ let userName = "Игрок";
 
 if (user) {
     if (user.first_name) userName = user.first_name;
-   
 }
 
 // Отображаем имя и аватар
