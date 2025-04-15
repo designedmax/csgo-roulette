@@ -27,7 +27,7 @@ class Roulette {
             const result = this.processBet(amount);
             this.showResult(result);
             this.toggleBetButtons(true);
-        }, 2000);
+        }, 1000);
     }
 
     toggleBetButtons(enable) {
@@ -43,16 +43,17 @@ class Roulette {
         resultElement.classList.remove('hidden');
         animationElement.innerHTML = '🎰';
         
-        // Simple spinning animation
+        // Smoother spinning animation
         let spins = 0;
+        const totalSpins = 8;
         const spinInterval = setInterval(() => {
             spins++;
             animationElement.innerHTML = this.getRandomEmoji();
             
-            if (spins >= 10) {
+            if (spins >= totalSpins) {
                 clearInterval(spinInterval);
             }
-        }, 200);
+        }, 125);
     }
 
     getRandomEmoji() {

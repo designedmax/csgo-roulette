@@ -211,7 +211,8 @@ body {
     background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding-top: 15%;
     z-index: 1000;
 }
 
@@ -226,6 +227,7 @@ body {
     width: 90%;
     max-width: 400px;
     text-align: center;
+    transform: translateY(-15%);
 }
 
 .modal-content h3 {

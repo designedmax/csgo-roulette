@@ -18,36 +18,38 @@ class History {
         const historyContainer = document.getElementById('bets-history');
         historyContainer.innerHTML = '';
 
-        this.user.userData.betHistory.forEach(bet => {
-            const historyItem = document.createElement('div');
-            historyItem.className = `bet-history-item ${bet.win ? 'win' : 'lose'}`;
-            
-            const date = new Date(bet.timestamp);
-            const formattedDate = date.toLocaleString('ru-RU', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+        // Ensure we have the latest history
+        const betHistory = this.user.getStoredBetHistory();
+        
+        if (betHistory && betHistory.length > 0) {
+            betHistory.forEach(bet => {
+                const historyItem = document.createElement('div');
+                historyItem.className = `bet-history-item ${bet.win ? 'win' : 'lose'}`;
+                
+                const date = new Date(bet.timestamp);
+                const formattedDate = date.toLocaleString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                if (bet.win) {
+                    historyItem.innerHTML = `
+                        <span>${formattedDate}</span>
+                        <span>Выигрыш: ${bet.skin} (${bet.amount} ₽)</span>
+                    `;
+                } else {
+                    historyItem.innerHTML = `
+                        <span>${formattedDate}</span>
+                        <span>Проигрыш: ${bet.amount} ₽</span>
+                    `;
+                }
+
+                historyContainer.appendChild(historyItem);
             });
-
-            if (bet.win) {
-                historyItem.innerHTML = `
-                    <span>${formattedDate}</span>
-                    <span>Выигрыш: ${bet.skin} (${bet.amount} ₽)</span>
-                `;
-            } else {
-                historyItem.innerHTML = `
-                    <span>${formattedDate}</span>
-                    <span>Проигрыш: ${bet.amount} ₽</span>
-                `;
-            }
-
-            historyContainer.appendChild(historyItem);
-        });
-
-        // Show message if history is empty
-        if (this.user.userData.betHistory.length === 0) {
+        } else {
             const emptyMessage = document.createElement('div');
             emptyMessage.className = 'empty-history';
             emptyMessage.textContent = 'История ставок пуста';

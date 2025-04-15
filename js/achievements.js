@@ -2,6 +2,7 @@ class Achievements {
     constructor(user) {
         this.user = user;
         this.initEventListeners();
+        this.initializeAchievements();
         this.updateAchievementsDisplay();
     }
 
@@ -9,15 +10,35 @@ class Achievements {
         // No specific event listeners needed for achievements
     }
 
+    initializeAchievements() {
+        // Initialize achievements if they don't exist
+        if (!this.user.userData.achievements || this.user.userData.achievements.length === 0) {
+            this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
+            this.user.saveUserData();
+        }
+
+        // Ensure all achievements from CONFIG exist in user's achievements
+        CONFIG.ACHIEVEMENTS.forEach(configAchievement => {
+            const userAchievement = this.user.userData.achievements.find(a => a.id === configAchievement.id);
+            if (!userAchievement) {
+                this.user.userData.achievements.push({
+                    ...configAchievement,
+                    unlocked: false
+                });
+            }
+        });
+
+        // Remove any achievements that don't exist in CONFIG
+        this.user.userData.achievements = this.user.userData.achievements.filter(achievement => 
+            CONFIG.ACHIEVEMENTS.some(configAchievement => configAchievement.id === achievement.id)
+        );
+
+        this.user.saveUserData();
+    }
+
     updateAchievementsDisplay() {
         const achievementsList = document.getElementById('achievements-list');
         achievementsList.innerHTML = '';
-
-        // Ensure achievements are properly initialized
-        if (!this.user.userData.achievements || this.user.userData.achievements.length === 0) {
-            this.user.userData.achievements = CONFIG.ACHIEVEMENTS;
-            this.user.saveUserData();
-        }
 
         this.user.userData.achievements.forEach(achievement => {
             const achievementElement = document.createElement('div');
@@ -56,12 +77,6 @@ class Achievements {
     checkAndUnlockAchievements() {
         const achievements = this.user.userData.achievements;
         let updated = false;
-
-        // Ensure achievements array exists and has all required achievements
-        if (!achievements || achievements.length === 0) {
-            this.user.userData.achievements = CONFIG.ACHIEVEMENTS;
-            updated = true;
-        }
 
         // New player achievement (unlocked by default)
         if (!achievements.find(a => a.id === 'new_player').unlocked) {
