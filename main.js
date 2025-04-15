@@ -1,21 +1,36 @@
-import { WebApp } from '@twa-dev/sdk';
 import axios from 'axios';
 
 // Инициализация Telegram WebApp
-const tg = WebApp;
-tg.ready();
+const tg = window.Telegram.WebApp;
 
-// Получение данных пользователя
-const user = tg.initDataUnsafe?.user;
-const userAvatar = document.getElementById('userAvatar');
-const userGreeting = document.getElementById('userGreeting');
-const userBalance = document.getElementById('userBalance');
+// Ждем загрузку DOM
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        tg.ready();
+        console.log('Telegram WebApp initialized');
+
+        // Получение данных пользователя
+        const user = tg.initDataUnsafe?.user;
+        const userAvatar = document.getElementById('userAvatar');
+        const userGreeting = document.getElementById('userGreeting');
+        const userBalance = document.getElementById('userBalance');
+
+        if (!userAvatar || !userGreeting || !userBalance) {
+            console.error('DOM elements not found');
+            return;
+        }
 
 // Установка данных пользователя
 if (user) {
+    console.log('User data received:', user);
     userAvatar.src = user.photo_url || 'https://telegram.org/img/t_logo.png';
     userGreeting.textContent = `Привет, ${user.first_name}!`;
+    userBalance.textContent = 'Баланс: 1000 ₽'; // Временное значение
+} else {
+    console.warn('User data not available');
+    userGreeting.textContent = 'Привет, гость!';
 }
+});
 
 // Инициализация модального окна рулетки
 const modal = document.getElementById('rouletteModal');
