@@ -1,6 +1,6 @@
 let tg = window.Telegram.WebApp;
 if (!tg) {
-    tg = { expand: () => {}, showPopup: () => {}, initDataUnsafe: {} };
+    tg = { expand: () => {}, showPopup: () => {}, initDataUnsafe: { user: {} } };
 }
 let userBalance = parseInt(localStorage.getItem('userBalance')) || 1000;
 document.getElementById('balance').textContent = userBalance;
@@ -30,6 +30,8 @@ let userName = user.first_name || "Игрок";
 
 // Устанавливаем имя и аватар при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
+    const user = tg.initDataUnsafe.user || {};
+    const userName = user.first_name || "Игрок";
     document.getElementById('username').textContent = userName;
     document.getElementById('user-avatar').src = user?.photo_url || "https://via.placeholder.com/50";
 });
