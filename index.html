@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS:GO Skin Roulette</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="main-page" class="page active">
+            <div class="user-info">
+                <img id="user-avatar" src="" alt="User Avatar">
+                <h2 id="user-name"></h2>
+                <div class="balance">Баланс: <span id="user-balance">0</span> ₽</div>
+                <button id="profile-btn" class="btn">Профиль</button>
+            </div>
+
+            <div class="roulette-section">
+                <h3>Выберите ставку</h3>
+                <div class="bet-buttons">
+                    <button class="bet-btn" data-amount="100">100 ₽</button>
+                    <button class="bet-btn" data-amount="300">300 ₽</button>
+                    <button class="bet-btn" data-amount="500">500 ₽</button>
+                    <button class="bet-btn" data-amount="1000">1000 ₽</button>
+                </div>
+                <div id="roulette-result" class="hidden">
+                    <div id="result-animation"></div>
+                    <div id="result-text"></div>
+                </div>
+            </div>
+
+            <div class="daily-bonus">
+                <h3>Ежедневный бонус</h3>
+                <button id="daily-bonus-btn" class="btn">Получить 5000 ₽</button>
+                <div id="bonus-timer"></div>
+            </div>
+        </div>
+
+        <div id="profile-page" class="page hidden">
+            <div class="profile-header">
+                <img id="profile-avatar" src="" alt="Profile Avatar">
+                <h2 id="profile-name"></h2>
+                <div class="profile-actions">
+                    <button id="deposit-btn" class="btn">Пополнить баланс</button>
+                    <button id="withdraw-btn" class="btn">Вывести средства</button>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <h4>Дата регистрации</h4>
+                    <p id="registration-date"></p>
+                </div>
+                <div class="stat-box">
+                    <h4>Всего игр</h4>
+                    <p id="total-games"></p>
+                </div>
+                <div class="stat-box">
+                    <h4>Побед</h4>
+                    <p id="total-wins"></p>
+                </div>
+                <div class="stat-box">
+                    <h4>Достижений</h4>
+                    <p id="total-achievements"></p>
+                </div>
+            </div>
+
+            <div class="achievements">
+                <h3>Достижения</h3>
+                <div id="achievements-list"></div>
+            </div>
+
+            <div class="history">
+                <h3>История ставок</h3>
+                <div id="bets-history"></div>
+                <button id="clear-history" class="btn">Очистить историю</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/roulette.js"></script>
+    <script src="js/achievements.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 
