@@ -26,16 +26,10 @@ body {
 .user-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 15px;
     margin-bottom: 15px;
 }
 
-#back-to-main {
-    padding: 6px 12px;
-    width: auto;
-    margin-left: auto;
-    font-size: 0.9rem;
-}
 .profile-pic {
     width: 60px;
     height: 60px;
