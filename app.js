@@ -8,7 +8,9 @@ if (!localStorage.getItem('registrationDate')) {
 if (localStorage.getItem('achievements')) {
     const storedAchievements = JSON.parse(localStorage.getItem('achievements'));
     if (!storedAchievements.includes('new_player')) {
-        storedAchievements.push('new_player');
+        storedAchievements.unshift('new_player');
+    } else {
+        storedAchievements = storedAchievements.filter(a => a !== 'new_player').concat('new_player');
     }
     achievements = storedAchievements;
 }
@@ -327,7 +329,7 @@ function updateAchievementsUI() {
     achievementsList.innerHTML = savedAchievements.length === 0 
         ? "<p>Достижений пока нет.</p>"
         : savedAchievements.map(ach => {
-            const achievementData = globalAchievementsList[ach] || { title: ach, condition: 0 };
+            const achievementData = achievementsList[ach] || { title: ach, condition: 0 };
             return `
                 <div class="achievement-item">
                     <h4>${achievementData.title}</h4>
