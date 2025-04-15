@@ -81,9 +81,10 @@ class Roulette {
                 betAmount: amount
             };
         } else {
+            // For loss, we already deducted the bet amount at the start
             result = {
                 win: false,
-                amount: amount,
+                amount: -amount, // Negative amount to indicate loss
                 betAmount: amount
             };
         }
