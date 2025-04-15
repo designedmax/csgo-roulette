@@ -198,7 +198,15 @@ function updateHistoryUI() {
     updateProfileStats();
 }
 
-// Инициализация после загрузки страницы
+// Инициализация для страницы профиля
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('registration-date')) {
+        updateProfileStats();
+        updateHistoryUI();
+        updateAchievementsUI();
+    }
+});
+
 // Функция для навигации на страницу профиля
 function navigateToProfile() {
     window.location.href = 'profile.html';
