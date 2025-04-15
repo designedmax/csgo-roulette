@@ -258,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Обработчик для кнопки "Крутить снова"
     document.getElementById('spin-again').addEventListener('click', () => {
         document.getElementById('result').classList.add('hidden');
+        document.querySelectorAll('.roulette-btn').forEach(btn => btn.disabled = false);
     });
 
     // Обработчики для кнопок баланса
