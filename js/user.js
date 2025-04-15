@@ -70,6 +70,9 @@ class User {
     }
 
     addBetToHistory(bet) {
+        if (!this.userData.betHistory) {
+            this.userData.betHistory = [];
+        }
         this.userData.betHistory.unshift(bet);
         if (this.userData.betHistory.length > 50) {
             this.userData.betHistory.pop();
@@ -95,6 +98,17 @@ class User {
         document.getElementById('total-games').textContent = this.userData.totalGames;
         document.getElementById('total-wins').textContent = this.userData.totalWins;
         document.getElementById('total-achievements').textContent = this.userData.achievements.filter(a => a.unlocked).length;
+        
+        // Add balance to profile
+        const profileBalance = document.createElement('div');
+        profileBalance.className = 'balance';
+        profileBalance.innerHTML = `Баланс: <span>${this.userData.balance}</span> ₽`;
+        const profileHeader = document.querySelector('.profile-header');
+        if (!profileHeader.querySelector('.balance')) {
+            profileHeader.appendChild(profileBalance);
+        } else {
+            profileHeader.querySelector('.balance').innerHTML = `Баланс: <span>${this.userData.balance}</span> ₽`;
+        }
     }
 
     canGetDailyBonus() {

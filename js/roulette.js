@@ -62,6 +62,7 @@ class Roulette {
     }
 
     processBet(amount) {
+        // Deduct bet amount from balance immediately
         this.user.userData.balance -= amount;
         this.user.userData.totalGames++;
         
@@ -76,12 +77,14 @@ class Roulette {
             result = {
                 win: true,
                 amount: winAmount,
-                skin: skin.name
+                skin: skin.name,
+                betAmount: amount
             };
         } else {
             result = {
                 win: false,
-                amount: amount
+                amount: amount,
+                betAmount: amount
             };
         }
 
@@ -107,7 +110,7 @@ class Roulette {
             resultText.innerHTML = `🎉 Поздравляем! Вы выиграли ${result.skin} (${result.amount} ₽)`;
             resultText.className = 'win';
         } else {
-            resultText.innerHTML = `😢 К сожалению, вы проиграли ${result.amount} ₽`;
+            resultText.innerHTML = `😢 К сожалению, вы проиграли ${result.betAmount} ₽`;
             resultText.className = 'lose';
         }
     }

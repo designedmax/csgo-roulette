@@ -42,18 +42,16 @@ class Achievements {
 
         this.user.userData.achievements.forEach(achievement => {
             const achievementElement = document.createElement('div');
-            achievementElement.className = `achievement-item ${achievement.unlocked ? '' : 'locked'}`;
+            achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
             
             const emoji = this.getAchievementEmoji(achievement.id);
-            const status = achievement.unlocked ? '✅' : '🔒';
             
             achievementElement.innerHTML = `
                 <span class="achievement-emoji">${emoji}</span>
                 <div class="achievement-info">
-                    <h4>${achievement.name}</h4>
-                    <p>${achievement.description}</p>
+                    <h4 class="achievement-name">${achievement.name}</h4>
+                    <p class="achievement-description">${achievement.description}</p>
                 </div>
-                <span class="achievement-status">${status}</span>
             `;
 
             achievementsList.appendChild(achievementElement);
