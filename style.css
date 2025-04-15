@@ -46,6 +46,29 @@ body {
     font-size: 0.9rem;
 }
 
+.user-balance {
+    text-align: center;
+    padding: 15px;
+    background: rgba(78, 84, 200, 0.1);
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.balance-btn {
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.balance-btn:hover {
+    transform: translateY(-2px);
+}
+
 .roulette-options {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -83,6 +106,48 @@ body {
 
 .hidden {
     display: none;
+}
+
+.achievements, .daily-bonus {
+    background-color: #0f3460;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.bonus-btn {
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 16px;
+    transition: transform 0.2s;
+}
+
+.bonus-btn:hover {
+    transform: translateY(-2px);
+}
+
+#achievements-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.achievement-item {
+    background: rgba(78, 84, 200, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.achievement-item.unlocked {
+    background: linear-gradient(135deg, rgba(78, 84, 200, 0.3), rgba(143, 148, 251, 0.3));
 }
 
 #spin-again {

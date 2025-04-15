@@ -17,6 +17,11 @@
                     <h1>Привет, <span id="username">Игрок</span>!</h1>
                     <p>Крути рулетку и выигрывай скины!</p>
                 </div>
+                <div class="user-balance">
+                    <h2>Баланс: <span id="balance">0</span> ₽</h2>
+                    <button id="deposit" class="balance-btn">Пополнить</button>
+                    <button id="withdraw" class="balance-btn">Вывести</button>
+                </div>
             </div>
         </header>
 
@@ -33,6 +38,16 @@
                 <h3>Результат:</h3>
                 <div id="skin-result"></div>
                 <button id="spin-again">Крутить снова</button>
+            </div>
+
+            <div class="achievements">
+                <h3>Достижения</h3>
+                <div id="achievements-list"></div>
+            </div>
+
+            <div class="daily-bonus">
+                <h3>Ежедневный бонус</h3>
+                <button id="claim-bonus" class="bonus-btn">Получить бонус</button>
             </div>
 
             <div id="history-section">

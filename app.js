@@ -1,10 +1,13 @@
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-tg.expand(); // Раскрываем на весь экран
+let tg = window.Telegram.WebApp;
+let userBalance = parseInt(localStorage.getItem('userBalance')) || 1000;
+let achievements = JSON.parse(localStorage.getItem('achievements')) || [];
+let lastBonusDate = localStorage.getItem('lastBonusDate') || null;
+
+tg.expand();
 
 // Получаем данные пользователя
 const user = tg.initDataUnsafe.user;
-let userName = "Игрок"; // Значение по умолчанию
+let userName = "Игрок";
 
 if (user) {
     if (user.first_name) userName = user.first_name;
@@ -26,21 +29,59 @@ const skins = [
 ];
 
 // Крутим рулетку
+// Инициализация функций баланса
+function updateBalance(amount) {
+    userBalance += amount;
+    localStorage.setItem('userBalance', userBalance);
+    document.getElementById('balance').textContent = userBalance;
+}
+
+function checkAchievement(type, value) {
+    const achievementsList = {
+        'first_win': { title: 'Первая победа', condition: 1 },
+        'big_win': { title: 'Крупный выигрыш', condition: 1000 },
+        'balance': { title: 'Богач', condition: 5000 }
+    };
+
+    if (!achievements.includes(type)) {
+        if ((type === 'balance' && userBalance >= value) ||
+            (type === 'big_win' && value >= achievementsList[type].condition)) {
+            achievements.push(type);
+            localStorage.setItem('achievements', JSON.stringify(achievements));
+            updateAchievementsUI();
+        }
+    }
+}
+
+function claimDailyBonus() {
+    const today = new Date().toDateString();
+    if (lastBonusDate !== today) {
+        updateBalance(5000);
+        lastBonusDate = today;
+        localStorage.setItem('lastBonusDate', lastBonusDate);
+        alert('Получен ежедневный бонус: 5000 ₽!');
+    } else {
+        alert('Вы уже получили сегодняшний бонус!');
+    }
+}
+
 function spinRoulette(price) {
-    const winChance = 0.4; // 40% шанс
+    if (userBalance < price) {
+        alert('Недостаточно средств!');
+        return;
+    }
+
+    updateBalance(-price);
+    const winChance = 0.4;
     const isWin = Math.random() < winChance;
     const resultElement = document.getElementById("skin-result");
     const resultContainer = document.getElementById("result");
     const rouletteButtons = document.querySelectorAll(".roulette-btn");
 
-    // Блокируем кнопки на время анимации
     rouletteButtons.forEach(btn => btn.disabled = true);
-
-    // Анимация вращения
     resultElement.innerHTML = `<div class="spinner">🎮</div>`;
     resultContainer.classList.remove("hidden");
 
-    // Имитация вращения (3 секунды)
     let spinTime = 0;
     const spinInterval = setInterval(() => {
         spinTime += 100;
@@ -51,6 +92,13 @@ function spinRoulette(price) {
             clearInterval(spinInterval);
             showResult(isWin, price);
             rouletteButtons.forEach(btn => btn.disabled = false);
+            
+            if (isWin) {
+                updateBalance(price * 2);
+                checkAchievement('first_win');
+                if (price >= 500) checkAchievement('big_win', price);
+            }
+            checkAchievement('balance', userBalance);
         }
     }, 100);
 }
@@ -104,27 +152,79 @@ function updateHistoryUI() {
         `).join("");
 }
 
-// Обработчики кнопок
-document.querySelectorAll(".roulette-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        const price = parseInt(btn.dataset.price);
-        tg.showPopup({
-            title: "Подтверждение ставки",
-            message: `Вы уверены, что хотите поставить ${price} ₽?`,
-            buttons: [
-                { id: "confirm", type: "ok", text: "Да" },
-                { id: "cancel", type: "cancel", text: "Нет" },
-            ],
-        }, (buttonId) => {
-            if (buttonId === "confirm") spinRoulette(price);
+// Инициализация после загрузки страницы
+document.addEventListener('DOMContentLoaded', () => {
+    // Устанавливаем имя пользователя и баланс
+    document.getElementById('username').textContent = userName;
+    document.getElementById('balance').textContent = userBalance;
+
+    // Устанавливаем аватар пользователя
+    const avatarElement = document.getElementById('user-avatar');
+    if (user && user.photo_url) {
+        avatarElement.src = user.photo_url;
+    } else {
+        avatarElement.src = 'https://via.placeholder.com/60';
+    }
+
+    // Обработчики для кнопок рулетки
+    document.querySelectorAll('.roulette-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const price = parseInt(button.dataset.price);
+            tg.showPopup({
+                title: "Подтверждение ставки",
+                message: `Вы уверены, что хотите поставить ${price} ₽?`,
+                buttons: [
+                    { id: "confirm", type: "ok", text: "Да" },
+                    { id: "cancel", type: "cancel", text: "Нет" },
+                ],
+            }, (buttonId) => {
+                if (buttonId === "confirm") spinRoulette(price);
+            });
         });
     });
+
+    // Обработчик для кнопки "Крутить снова"
+    document.getElementById('spin-again').addEventListener('click', () => {
+        document.getElementById('result').classList.add('hidden');
+    });
+
+    // Обработчики для кнопок баланса
+    document.getElementById('deposit').addEventListener('click', () => {
+        const amount = parseInt(prompt('Введите сумму пополнения:'));
+        if (amount && amount > 0) {
+            updateBalance(amount);
+        }
+    });
+
+    document.getElementById('withdraw').addEventListener('click', () => {
+        const amount = parseInt(prompt('Введите сумму вывода:'));
+        if (amount && amount > 0 && amount <= userBalance) {
+            updateBalance(-amount);
+        } else {
+            alert('Недостаточно средств или некорректная сумма!');
+        }
+    });
+
+    // Обработчик для ежедневного бонуса
+    document.getElementById('claim-bonus').addEventListener('click', claimDailyBonus);
+
+    // Загружаем историю и обновляем достижения
+    updateHistoryUI();
+    updateAchievementsUI();
 });
 
-// Кнопка "Крутить снова"
-document.getElementById("spin-again").addEventListener("click", () => {
-    document.getElementById("result").classList.add("hidden");
-});
+function updateAchievementsUI() {
+    const achievementsList = document.getElementById('achievements-list');
+    const allAchievements = [
+        { id: 'first_win', title: 'Первая победа', description: 'Выиграйте свой первый скин' },
+        { id: 'big_win', title: 'Крупный выигрыш', description: 'Выиграйте ставку от 1000₽' },
+        { id: 'balance', title: 'Богач', description: 'Накопите 5000₽ на балансе' }
+    ];
 
-// Загружаем историю при старте
-updateHistoryUI();
+    achievementsList.innerHTML = allAchievements.map(ach => `
+        <div class="achievement-item ${achievements.includes(ach.id) ? 'unlocked' : ''}">
+            <h4>${ach.title}</h4>
+            <p>${ach.description}</p>
+        </div>
+    `).join('');
+}
