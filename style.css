@@ -1,0 +1,130 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #1a1a2e;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 500px;
+    background-color: #16213e;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.profile-pic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4e54c8;
+}
+
+.user-greeting h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.user-greeting p {
+    margin: 5px 0 0;
+    color: #a0a0a0;
+    font-size: 0.9rem;
+}
+
+.roulette-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.roulette-btn {
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.roulette-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#result {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#skin-result {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #0f3460;
+    border-radius: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+#spin-again {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.spinner {
+    font-size: 50px;
+    animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+#history-section {
+    margin-top: 30px;
+    background-color: #0f3460;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.history-entry {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    background-color: #16213e;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-entry.win {
+    border-left: 4px solid #4CAF50;
+}
+
+.history-entry.lose {
+    border-left: 4px solid #F44336;
+}
