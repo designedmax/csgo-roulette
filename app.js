@@ -45,7 +45,6 @@ function checkAchievement(type, value) {
         'balance': { title: 'Богач', condition: 5000 },
         'new_player': { title: 'Новый игрок', condition: 0 },
         'winner': { title: 'Победитель', condition: 10 },
-        'master_winner': { title: 'Наяриватель', condition: 50 },
         'loser': { title: 'Лошок', condition: 30 }
     };
 
@@ -106,7 +105,6 @@ function spinRoulette(price) {
                 checkAchievement('first_win');
                 if (price >= 500) checkAchievement('big_win', price);
                 if (winCount >= 10) checkAchievement('winner');
-                if (winCount >= 50) checkAchievement('master_winner');
             } else {
                 loseCount++;
                 localStorage.setItem('loseCount', loseCount);
@@ -235,7 +233,6 @@ function updateAchievementsUI() {
         { id: 'big_win', title: 'Крупный выигрыш', description: 'Выиграйте ставку от 1000₽' },
         { id: 'balance', title: 'Богач', description: 'Накопите 5000₽ на балансе' },
         { id: 'winner', title: 'Победитель', description: 'Выиграйте 10 раз' },
-        { id: 'master_winner', title: 'Наяриватель', description: 'Выиграйте 50 раз' },
         { id: 'loser', title: 'Лошок', description: 'Проиграйте 30 раз' }
     ];
 
