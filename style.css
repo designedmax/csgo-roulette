@@ -20,10 +20,14 @@ body {
 }
 
 .user-info {
+    margin-bottom: 20px;
+}
+
+.user-header {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .profile-pic {
@@ -51,7 +55,6 @@ body {
     padding: 15px;
     background: rgba(78, 84, 200, 0.1);
     border-radius: 10px;
-    margin-top: 15px;
 }
 
 .balance-btn {

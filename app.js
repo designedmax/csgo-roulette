@@ -1,6 +1,8 @@
 let tg = window.Telegram.WebApp;
 let userBalance = parseInt(localStorage.getItem('userBalance')) || 1000;
-let achievements = JSON.parse(localStorage.getItem('achievements')) || [];
+let achievements = JSON.parse(localStorage.getItem('achievements')) || ['new_player'];
+let winCount = parseInt(localStorage.getItem('winCount')) || 0;
+let loseCount = parseInt(localStorage.getItem('loseCount')) || 0;
 let lastBonusDate = localStorage.getItem('lastBonusDate') || null;
 
 tg.expand();
@@ -40,7 +42,11 @@ function checkAchievement(type, value) {
     const achievementsList = {
         'first_win': { title: 'Первая победа', condition: 1 },
         'big_win': { title: 'Крупный выигрыш', condition: 1000 },
-        'balance': { title: 'Богач', condition: 5000 }
+        'balance': { title: 'Богач', condition: 5000 },
+        'new_player': { title: 'Новый игрок', condition: 0 },
+        'winner': { title: 'Победитель', condition: 10 },
+        'master_winner': { title: 'Наяриватель', condition: 50 },
+        'loser': { title: 'Лошок', condition: 30 }
     };
 
     if (!achievements.includes(type)) {
@@ -95,8 +101,16 @@ function spinRoulette(price) {
             
             if (isWin) {
                 updateBalance(price * 2);
+                winCount++;
+                localStorage.setItem('winCount', winCount);
                 checkAchievement('first_win');
                 if (price >= 500) checkAchievement('big_win', price);
+                if (winCount >= 10) checkAchievement('winner');
+                if (winCount >= 50) checkAchievement('master_winner');
+            } else {
+                loseCount++;
+                localStorage.setItem('loseCount', loseCount);
+                if (loseCount >= 30) checkAchievement('loser');
             }
             checkAchievement('balance', userBalance);
         }
@@ -216,9 +230,13 @@ document.addEventListener('DOMContentLoaded', () => {
 function updateAchievementsUI() {
     const achievementsList = document.getElementById('achievements-list');
     const allAchievements = [
+        { id: 'new_player', title: 'Новый игрок', description: 'Добро пожаловать в игру!' },
         { id: 'first_win', title: 'Первая победа', description: 'Выиграйте свой первый скин' },
         { id: 'big_win', title: 'Крупный выигрыш', description: 'Выиграйте ставку от 1000₽' },
-        { id: 'balance', title: 'Богач', description: 'Накопите 5000₽ на балансе' }
+        { id: 'balance', title: 'Богач', description: 'Накопите 5000₽ на балансе' },
+        { id: 'winner', title: 'Победитель', description: 'Выиграйте 10 раз' },
+        { id: 'master_winner', title: 'Наяриватель', description: 'Выиграйте 50 раз' },
+        { id: 'loser', title: 'Лошок', description: 'Проиграйте 30 раз' }
     ];
 
     achievementsList.innerHTML = allAchievements.map(ach => `
