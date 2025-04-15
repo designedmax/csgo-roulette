@@ -200,6 +200,9 @@ function updateHistoryUI() {
 // Инициализация для страницы профиля
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('registration-date')) {
+        const userData = JSON.parse(localStorage.getItem('csgoRouletteUser')) || {};
+        document.getElementById('username').textContent = userData.name || 'Игрок';
+        document.getElementById('user-avatar').src = userData.avatar || 'default-avatar.jpg';
         updateProfileStats();
         updateHistoryUI();
         updateAchievementsUI();
@@ -302,19 +305,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateAchievementsUI() {
     const achievementsList = document.getElementById('achievements-list');
-    const allAchievements = [
-        { id: 'new_player', title: 'Новый игрок', description: 'Добро пожаловать в игру!' },
-        { id: 'first_win', title: 'Первая победа', description: 'Выиграйте свой первый скин' },
-        { id: 'big_win', title: 'Крупный выигрыш', description: 'Выиграйте ставку от 1000₽' },
-        { id: 'balance', title: 'Богач', description: 'Накопите 5000₽ на балансе' },
-        { id: 'winner', title: 'Победитель', description: 'Выиграйте 10 раз' },
-        { id: 'loser', title: 'Лошок', description: 'Проиграйте 30 раз' }
-    ];
-
-    achievementsList.innerHTML = allAchievements.map(ach => `
-        <div class="achievement-item ${achievements.includes(ach.id) ? 'unlocked' : ''}">
-            <h4>${ach.title}</h4>
-            <p>${ach.description}</p>
-        </div>
-    `).join('');
+    const savedAchievements = JSON.parse(localStorage.getItem('csgoRouletteAchievements')) || [];
+    
+    achievementsList.innerHTML = savedAchievements.length === 0 
+        ? "<p>Достижений пока нет.</p>"
+        : savedAchievements.map(ach => `
+            <div class="achievement-item">
+                <h4>${ach.title}</h4>
+                <p>${ach.description}</p>
+                <span>${new Date(ach.date).toLocaleDateString()}</span>
+            </div>
+        `).join('');
 }
