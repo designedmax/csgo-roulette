@@ -29,55 +29,25 @@
         </header>
 
         <main>
-            <section id="profile-section" class="profile">
-                <h2>Профиль игрока</h2>
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Дата регистрации:</span>
-                        <span id="registration-date">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Всего игр:</span>
-                        <span id="total-games">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Процент побед:</span>
-                        <span id="win-rate">0%</span>
-                    </div>
+            <main>
+                <h2>Выберите ставку:</h2>
+                <div class="roulette-options">
+                    <button class="roulette-btn" data-price="100">100 ₽</button>
+                    <button class="roulette-btn" data-price="300">300 ₽</button>
+                    <button class="roulette-btn" data-price="500">500 ₽</button>
+                    <button class="roulette-btn" data-price="1000">1000 ₽</button>
                 </div>
-            </section>
 
-            <h2>Выберите ставку:</h2>
-            <div class="roulette-options">
-                <button class="roulette-btn" data-price="100">100 ₽</button>
-                <button class="roulette-btn" data-price="300">300 ₽</button>
-                <button class="roulette-btn" data-price="500">500 ₽</button>
-                <button class="roulette-btn" data-price="1000">1000 ₽</button>
-            </div>
-
-            <div id="result" class="hidden">
-                <h3>Результат:</h3>
-                <div id="skin-result"></div>
-                <button id="spin-again">Крутить снова</button>
-            </div>
-
-            <div class="achievements">
-                <h3>Достижения</h3>
-                <div id="achievements-list"></div>
-            </div>
-
-            <div class="daily-bonus">
-                <h3>Ежедневный бонус</h3>
-                <button id="claim-bonus" class="bonus-btn">Получить бонус</button>
-            </div>
-
-            <div id="history-section">
-                <div class="history-header">
-                    <h3>История ставок</h3>
-                    <button id="clear-history">Очистить историю</button>
+                <div id="result" class="hidden">
+                    <h3>Результат:</h3>
+                    <div id="skin-result"></div>
+                    <button id="spin-again">Крутить снова</button>
                 </div>
-                <div id="history-list"></div>
-            </div>
+
+                <div class="daily-bonus">
+                    <h3>Ежедневный бонус</h3>
+                    <button id="claim-bonus" class="bonus-btn">Получить бонус</button>
+                </div>
         </main>
     </div>
 </body>
