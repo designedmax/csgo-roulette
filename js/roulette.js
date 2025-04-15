@@ -16,6 +16,11 @@ class Roulette {
             return;
         }
 
+        // Deduct bet amount immediately
+        this.user.userData.balance -= amount;
+        this.user.saveUserData();
+        this.user.updateUI();
+
         // Disable bet buttons during animation
         this.toggleBetButtons(false);
 
@@ -62,8 +67,6 @@ class Roulette {
     }
 
     processBet(amount) {
-        // Deduct bet amount from balance immediately
-        this.user.userData.balance -= amount;
         this.user.userData.totalGames++;
         
         const isWin = Math.random() < CONFIG.WIN_CHANCE;
@@ -81,10 +84,9 @@ class Roulette {
                 betAmount: amount
             };
         } else {
-            // For loss, we already deducted the bet amount at the start
             result = {
                 win: false,
-                amount: -amount, // Negative amount to indicate loss
+                amount: -amount,
                 betAmount: amount
             };
         }
