@@ -5,45 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS:GO Рулетка</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="app.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <header class="user-info bento-box">
-            <img id="userAvatar" class="avatar" src="" alt="Аватар">
-            <h1 id="userGreeting">Привет!</h1>
-            <div id="userBalance" class="balance">Баланс: 0 ₽</div>
+        <header>
+            <div class="user-info">
+                <img id="user-avatar" src="" alt="Аватар" class="profile-pic">
+                <div class="user-greeting">
+                    <h1>Привет, <span id="username">Игрок</span>!</h1>
+                    <p>Крути рулетку и выигрывай скины!</p>
+                </div>
+            </div>
         </header>
 
-        <div class="roulette-options">
-            <div class="bento-box roulette-option" data-price="100">
-                <h2>100 ₽</h2>
-                <button class="spin-button">Крутить</button>
+        <main>
+            <h2>Выберите ставку:</h2>
+            <div class="roulette-options">
+                <button class="roulette-btn" data-price="100">100 ₽</button>
+                <button class="roulette-btn" data-price="300">300 ₽</button>
+                <button class="roulette-btn" data-price="500">500 ₽</button>
+                <button class="roulette-btn" data-price="1000">1000 ₽</button>
             </div>
-            <div class="bento-box roulette-option" data-price="300">
-                <h2>300 ₽</h2>
-                <button class="spin-button">Крутить</button>
-            </div>
-            <div class="bento-box roulette-option" data-price="500">
-                <h2>500 ₽</h2>
-                <button class="spin-button">Крутить</button>
-            </div>
-            <div class="bento-box roulette-option" data-price="1000">
-                <h2>1000 ₽</h2>
-                <button class="spin-button">Крутить</button>
-            </div>
-        </div>
 
-        <div id="rouletteModal" class="modal">
-            <div class="modal-content bento-box">
-                <div class="roulette-container">
-                    <div class="roulette-items"></div>
-                </div>
-                <div class="result-message"></div>
+            <div id="result" class="hidden">
+                <h3>Результат:</h3>
+                <div id="skin-result"></div>
+                <button id="spin-again">Крутить снова</button>
             </div>
-        </div>
+
+            <div id="history-section">
+                <h3>История ставок</h3>
+                <div id="history-list"></div>
+            </div>
+        </main>
     </div>
-
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script type="module" src="main.js"></script>
 </body>
 </html>
