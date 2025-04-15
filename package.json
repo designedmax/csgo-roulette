@@ -1,13 +1,16 @@
 {
   "name": "csgo-roulette-tg",
   "version": "1.0.0",
-  "description": "CS:GO Roulette Telegram Mini App",
-  "main": "app.js",
+  "private": true,
   "scripts": {
     "start": "serve .",
-    "dev": "serve -l 8080 ."
+    "dev": "serve -l 8080 .",
+    "build": "echo 'No build step required'"
   },
   "dependencies": {
     "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

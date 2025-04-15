@@ -107,13 +107,36 @@ body {
     cursor: pointer;
 }
 
-.loading {
+/* Add loading state styles */
+body.loading {
     opacity: 0.7;
     pointer-events: none;
-    position: relative;
 }
 
-.loading::before {
+body.loading::after {
+    content: 'Загрузка...';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+/* Add error message styles */
+.error-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(244, 67, 54, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+}
+
+#loading::before {
     content: '';
     position: absolute;
     top: 0;
