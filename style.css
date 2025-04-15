@@ -179,6 +179,28 @@ body {
     border-radius: 10px;
 }
 
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#clear-history {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: transform 0.2s;
+}
+
+#clear-history:hover {
+    transform: translateY(-2px);
+}
+
 .history-entry {
     padding: 10px;
     margin: 5px 0;

@@ -156,6 +156,11 @@ function saveToHistory(status, skinName, skinPrice, betAmount) {
 }
 
 // Обновляем историю на экране
+function clearHistory() {
+    localStorage.removeItem("csgoRouletteHistory");
+    updateHistoryUI();
+}
+
 function updateHistoryUI() {
     const historyList = document.getElementById("history-list");
     const history = JSON.parse(localStorage.getItem("csgoRouletteHistory")) || [];
@@ -230,6 +235,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Загружаем историю и обновляем достижения
     updateHistoryUI();
     updateAchievementsUI();
+
+    // Обработчик для кнопки очистки истории
+    document.getElementById('clear-history').addEventListener('click', () => {
+        tg.showPopup({
+            title: "Подтверждение",
+            message: "Вы уверены, что хотите очистить всю историю ставок?",
+            buttons: [
+                { id: "confirm", type: "destructive", text: "Да, очистить" },
+                { id: "cancel", type: "cancel", text: "Отмена" },
+            ],
+        }, (buttonId) => {
+            if (buttonId === "confirm") clearHistory();
+        });
+    });
 });
 
 function updateAchievementsUI() {
