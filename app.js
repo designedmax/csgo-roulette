@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateAchievementsUI() {
     const achievementsList = document.getElementById('achievements-list');
-    const savedAchievements = JSON.parse(localStorage.getItem('csgoRouletteAchievements')) || [];
+    const savedAchievements = JSON.parse(localStorage.getItem('achievements')) || [];
     
     achievementsList.innerHTML = savedAchievements.length === 0 
         ? "<p>Достижений пока нет.</p>"
