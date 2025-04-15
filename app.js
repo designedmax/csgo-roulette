@@ -2,6 +2,21 @@ let tg = window.Telegram.WebApp;
 if (!tg) {
     tg = { expand: () => {}, showPopup: () => {}, initDataUnsafe: { user: {} } };
 }
+
+// Инициализация пользователя
+const initUser = () => {
+    const user = tg.initDataUnsafe.user || {};
+    const userName = user.first_name || "Игрок";
+    const userAvatar = user?.photo_url || "https://via.placeholder.com/50";
+    
+    const usernameElements = document.querySelectorAll('#username');
+    const avatarElements = document.querySelectorAll('#user-avatar');
+    
+    usernameElements.forEach(el => el.textContent = userName);
+    avatarElements.forEach(el => el.src = userAvatar);
+};
+
+document.addEventListener('DOMContentLoaded', initUser);
 let userBalance = parseInt(localStorage.getItem('userBalance')) || 1000;
 document.getElementById('balance').textContent = userBalance;
 let achievements = ['new_player'];
