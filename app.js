@@ -24,7 +24,7 @@ let userName = "Игрок";
 
 if (user) {
     if (user.first_name) userName = user.first_name;
-    if (user.username) userName += ` (@${user.username})`;
+   
 }
 
 // Отображаем имя и аватар
