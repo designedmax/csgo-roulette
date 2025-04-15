@@ -38,6 +38,42 @@ header {
     border: 2px solid var(--steam-blue);
 }
 
+.user-greeting h3 {
+    font-size: 1.2em;
+    margin: 0 0 10px 0;
+    color: var(--steam-text);
+}
+
+.roulette-message p {
+    font-size: 0.9em;
+    margin-top: -5px;
+}
+
+.balance-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.balance-btn {
+    background: linear-gradient(to bottom, #3D5C3D, #2A3F2A);
+    border: 1px solid #66C0F4;
+    padding: 8px 15px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.profile-btn {
+    background: transparent;
+    border: 2px solid var(--steam-blue);
+    padding: 8px 20px;
+}
+
+.balance-btn:hover {
+    background: linear-gradient(to bottom, #4CAF50, #3D5C3D);
+    box-shadow: 0 0 8px #2A3F2A;
+}
+
 .user-balance h2 {
     color: var(--steam-blue);
     margin: 10px 0;
