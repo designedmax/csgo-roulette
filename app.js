@@ -48,8 +48,7 @@ function updateBalance(amount) {
     document.getElementById('balance').textContent = userBalance;
 }
 
-function checkAchievement(type, value) {
-    const achievementsList = {
+const achievementsList = {
         'first_win': { title: 'Первая победа', description: 'Одержать первую победу', condition: 1 },
         'big_win': { title: 'Крупный выигрыш', description: 'Выиграть от 1000₽ за раз', condition: 1000 },
         'balance': { title: 'Богач', description: 'Накопить 5000₽ на балансе', condition: 5000 },
@@ -57,6 +56,24 @@ function checkAchievement(type, value) {
         'winner': { title: 'Победитель', description: '10 побед', condition: 10 },
         'loser': { title: 'Лошок', description: '30 проигрышей', condition: 30 }
     };
+
+function checkAchievement(type, value) {
+    if (!achievements.includes(type)) {
+        if (type === 'winner') {
+            const history = JSON.parse(localStorage.getItem('csgoRouletteHistory')) || [];
+            const totalWins = history.filter(entry => entry.status === 'win').length;
+            if (type === 'first_win' ? history.some(h => h.result === 'win') : totalWins >= achievementsList[type].condition) {
+                achievements.push(type);
+                localStorage.setItem('achievements', JSON.stringify(achievements));
+                updateAchievementsUI();
+            }
+        } else if ((type === 'balance' && userBalance >= value) ||
+            (type === 'big_win' && value >= achievementsList[type].condition)) {
+            achievements.push(type);
+            localStorage.setItem('achievements', JSON.stringify(achievements));
+            updateAchievementsUI();
+        }
+    }
 
     if (!achievements.includes(type)) {
         if (type === 'winner') {
@@ -304,13 +321,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateAchievementsUI() {
-    const achievementsList = document.getElementById('achievements-list');
+    const achievementsContainer = document.getElementById('achievements-list');
     const savedAchievements = JSON.parse(localStorage.getItem('achievements')) || [];
     
     achievementsList.innerHTML = savedAchievements.length === 0 
         ? "<p>Достижений пока нет.</p>"
         : savedAchievements.map(ach => {
-            const achievementData = achievementsList[ach];
+            const achievementData = globalAchievementsList[ach] || { title: ach, condition: 0 };
             return `
                 <div class="achievement-item">
                     <h4>${achievementData.title}</h4>
