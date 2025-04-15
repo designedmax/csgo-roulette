@@ -13,6 +13,12 @@ class Achievements {
         const achievementsList = document.getElementById('achievements-list');
         achievementsList.innerHTML = '';
 
+        // Ensure achievements are properly initialized
+        if (!this.user.userData.achievements || this.user.userData.achievements.length === 0) {
+            this.user.userData.achievements = CONFIG.ACHIEVEMENTS;
+            this.user.saveUserData();
+        }
+
         this.user.userData.achievements.forEach(achievement => {
             const achievementElement = document.createElement('div');
             achievementElement.className = `achievement-item ${achievement.unlocked ? '' : 'locked'}`;
@@ -50,6 +56,12 @@ class Achievements {
     checkAndUnlockAchievements() {
         const achievements = this.user.userData.achievements;
         let updated = false;
+
+        // Ensure achievements array exists and has all required achievements
+        if (!achievements || achievements.length === 0) {
+            this.user.userData.achievements = CONFIG.ACHIEVEMENTS;
+            updated = true;
+        }
 
         // New player achievement (unlocked by default)
         if (!achievements.find(a => a.id === 'new_player').unlocked) {

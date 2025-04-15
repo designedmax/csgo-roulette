@@ -40,6 +40,7 @@
 
         <div id="profile-page" class="page hidden">
             <div class="profile-header">
+                <button id="back-btn" class="btn back-btn">← Назад</button>
                 <img id="profile-avatar" src="" alt="Profile Avatar">
                 <h2 id="profile-name"></h2>
                 <div class="profile-actions">
@@ -76,6 +77,30 @@
                 <h3>История ставок</h3>
                 <div id="bets-history"></div>
                 <button id="clear-history" class="btn">Очистить историю</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для пополнения баланса -->
+    <div id="deposit-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Пополнение баланса</h3>
+            <input type="number" id="deposit-amount" placeholder="Введите сумму" min="1">
+            <div class="modal-buttons">
+                <button id="confirm-deposit" class="btn">Пополнить</button>
+                <button id="cancel-deposit" class="btn">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для вывода средств -->
+    <div id="withdraw-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Вывод средств</h3>
+            <input type="number" id="withdraw-amount" placeholder="Введите сумму" min="1">
+            <div class="modal-buttons">
+                <button id="confirm-withdraw" class="btn">Вывести</button>
+                <button id="cancel-withdraw" class="btn">Отмена</button>
             </div>
         </div>
     </div>
