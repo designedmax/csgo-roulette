@@ -1,6 +1,13 @@
 let tg = window.Telegram.WebApp;
 let userBalance = parseInt(localStorage.getItem('userBalance')) || 1000;
-let achievements = JSON.parse(localStorage.getItem('achievements')) || ['new_player'];
+let achievements = ['new_player'];
+if (localStorage.getItem('achievements')) {
+    const storedAchievements = JSON.parse(localStorage.getItem('achievements'));
+    if (!storedAchievements.includes('new_player')) {
+        storedAchievements.push('new_player');
+    }
+    achievements = storedAchievements;
+}
 let winCount = parseInt(localStorage.getItem('winCount')) || 0;
 let loseCount = parseInt(localStorage.getItem('loseCount')) || 0;
 let lastBonusDate = localStorage.getItem('lastBonusDate') || null;
