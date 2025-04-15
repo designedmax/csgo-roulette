@@ -50,12 +50,12 @@ function updateBalance(amount) {
 
 function checkAchievement(type, value) {
     const achievementsList = {
-        'first_win': { title: 'Первая победа', condition: 1 },
-        'big_win': { title: 'Крупный выигрыш', condition: 1000 },
-        'balance': { title: 'Богач', condition: 5000 },
-        'new_player': { title: 'Новый игрок', condition: 0 },
-        'winner': { title: 'Победитель', condition: 10 },
-        'loser': { title: 'Лошок', condition: 30 }
+        'first_win': { title: 'Первая победа', description: 'Одержать первую победу', condition: 1 },
+        'big_win': { title: 'Крупный выигрыш', description: 'Выиграть от 1000₽ за раз', condition: 1000 },
+        'balance': { title: 'Богач', description: 'Накопить 5000₽ на балансе', condition: 5000 },
+        'new_player': { title: 'Новый игрок', description: 'Начать играть', condition: 0 },
+        'winner': { title: 'Победитель', description: '10 побед', condition: 10 },
+        'loser': { title: 'Лошок', description: '30 проигрышей', condition: 30 }
     };
 
     if (!achievements.includes(type)) {
@@ -309,11 +309,12 @@ function updateAchievementsUI() {
     
     achievementsList.innerHTML = savedAchievements.length === 0 
         ? "<p>Достижений пока нет.</p>"
-        : savedAchievements.map(ach => `
-            <div class="achievement-item">
-                <h4>${ach.title}</h4>
-                <p>${ach.description}</p>
-                <span>${new Date(ach.date).toLocaleDateString()}</span>
-            </div>
-        `).join('');
+        : savedAchievements.map(ach => {
+            const achievementData = achievementsList[ach];
+            return `
+                <div class="achievement-item">
+                    <h4>${achievementData.title}</h4>
+                    <p>Условие: ${achievementData.condition}</p>
+                </div>`;
+        }).join('');
 }
