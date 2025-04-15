@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - CS:GO Рулетка</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="user-info">
+                <div class="user-header">
+                    <img id="user-avatar" src="" alt="Аватар" class="profile-pic">
+                    <div class="user-greeting">
+                        <h1><span id="username">Игрок</span></h1>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="profile">
+                <h2>Статистика</h2>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Дата регистрации</span>
+                        <span id="registration-date">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Всего игр</span>
+                        <span id="total-games">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Процент побед</span>
+                        <span id="win-rate">0%</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="history-section">
+                <div class="history-header">
+                    <h2>История ставок</h2>
+                    <button id="clear-history">Очистить историю</button>
+                </div>
+                <div id="history-list"></div>
+            </section>
+
+            <section id="achievements-section">
+                <h2>Достижения</h2>
+                <div id="achievements-list"></div>
+            </section>
+
+            <button id="back-to-main" class="balance-btn">Вернуться на главную</button>
+        </main>
+    </div>
+</body>
+</html>

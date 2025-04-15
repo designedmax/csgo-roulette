@@ -57,6 +57,40 @@ body {
     border-radius: 10px;
 }
 
+.profile-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.profile-btn:hover {
+    transform: translateY(-2px);
+}
+
+#back-to-main {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#back-to-main:hover {
+    transform: translateY(-2px);
+}
+
 .balance-btn {
     background: linear-gradient(135deg, #4e54c8, #8f94fb);
     color: white;

@@ -200,10 +200,21 @@ function updateHistoryUI() {
 }
 
 // Инициализация после загрузки страницы
+// Функция для навигации на страницу профиля
+function navigateToProfile() {
+    window.location.href = 'profile.html';
+}
+
+// Функция для возврата на главную страницу
+function navigateToMain() {
+    window.location.href = 'index.html';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Устанавливаем имя пользователя и баланс
     document.getElementById('username').textContent = userName;
-    document.getElementById('balance').textContent = userBalance;
+    const balanceElement = document.getElementById('balance');
+    if (balanceElement) balanceElement.textContent = userBalance;
 
     // Устанавливаем аватар пользователя
     const avatarElement = document.getElementById('user-avatar');
@@ -212,6 +223,14 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         avatarElement.src = 'https://via.placeholder.com/60';
     }
+
+    // Обработчик для кнопки профиля
+    const profileBtn = document.getElementById('profile-btn');
+    if (profileBtn) profileBtn.addEventListener('click', navigateToProfile);
+
+    // Обработчик для кнопки возврата на главную
+    const backBtn = document.getElementById('back-to-main');
+    if (backBtn) backBtn.addEventListener('click', navigateToMain);
 
     // Обработчики для кнопок рулетки
     document.querySelectorAll('.roulette-btn').forEach(button => {
