@@ -174,11 +174,10 @@ function clearHistory() {
 
 function updateProfileStats() {
     const totalGames = winCount + loseCount;
-    const winRate = totalGames > 0 ? Math.round((winCount / totalGames) * 100) : 0;
-    
     document.getElementById('registration-date').textContent = new Date(registrationDate).toLocaleDateString();
-    document.getElementById('total-games').textContent = totalGames;
-    document.getElementById('win-rate').textContent = `${winRate}%`;
+    document.getElementById('total-games').textContent = winCount + loseCount;
+    document.getElementById('win-count').textContent = winCount;
+    document.getElementById('achievements-count').textContent = achievements.length;
 }
 
 function updateHistoryUI() {
