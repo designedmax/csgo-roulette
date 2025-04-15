@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS:GO Рулетка</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script type="module" src="config.js"></script>
+    <script type="module" src="app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="user-info">
+                <img id="user-avatar" src="" alt="Аватар" class="profile-pic">
+                <div class="user-greeting">
+                    <h1>Привет, <span id="username">Игрок</span>!</h1>
+                    <p>Испытай удачу в рулетке!</p>
+                </div>
+                <div class="user-stats">
+                    <div class="streak-counter">Серия: <span id="current-streak">0</span></div>
+                    <div class="best-streak">Рекорд: <span id="best-streak">0</span></div>
+                </div>
+            </div>
+            <div id="daily-bonus" class="hidden">
+                <div class="bonus-notification">🎁 Доступен ежедневный бонус!</div>
+            </div>
+        </header>
+
+        <main>
+            <h2>Выберите ставку:</h2>
+            <div class="roulette-options">
+                <button class="roulette-btn" data-price="100">100 ₽</button>
+                <button class="roulette-btn" data-price="300">300 ₽</button>
+                <button class="roulette-btn" data-price="500">500 ₽</button>
+                <button class="roulette-btn" data-price="1000">1000 ₽</button>
+            </div>
+
+            <div id="result" class="hidden">
+                <h3>Результат:</h3>
+                <div id="skin-result"></div>
+                <button id="spin-again">Крутить снова</button>
+            </div>
+
+            <div id="achievements-section">
+                <h3>Достижения</h3>
+                <div id="achievements-list"></div>
+            </div>
+
+            <div id="history-section">
+                <h3>История ставок</h3>
+                <div id="history-list"></div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
