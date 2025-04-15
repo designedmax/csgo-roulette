@@ -56,7 +56,15 @@ function checkAchievement(type, value) {
     };
 
     if (!achievements.includes(type)) {
-        if ((type === 'balance' && userBalance >= value) ||
+        if (type === 'winner') {
+            const history = JSON.parse(localStorage.getItem('csgoRouletteHistory')) || [];
+            const totalWins = history.filter(entry => entry.status === 'win').length;
+            if (totalWins >= achievementsList[type].condition) {
+                achievements.push(type);
+                localStorage.setItem('achievements', JSON.stringify(achievements));
+                updateAchievementsUI();
+            }
+        } else if ((type === 'balance' && userBalance >= value) ||
             (type === 'big_win' && value >= achievementsList[type].condition)) {
             achievements.push(type);
             localStorage.setItem('achievements', JSON.stringify(achievements));
