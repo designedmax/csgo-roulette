@@ -62,7 +62,7 @@ function checkAchievement(type, value) {
         if (type === 'winner') {
             const history = JSON.parse(localStorage.getItem('csgoRouletteHistory')) || [];
             const totalWins = history.filter(entry => entry.status === 'win').length;
-            if (totalWins >= achievementsList[type].condition) {
+            if (type === 'first_win' ? history.some(h => h.result === 'win') : totalWins >= achievementsList[type].condition) {
                 achievements.push(type);
                 localStorage.setItem('achievements', JSON.stringify(achievements));
                 updateAchievementsUI();
@@ -111,7 +111,7 @@ function spinRoulette(price) {
         const emojis = ["🔫", "💣", "🔪", "💰", "🎯"];
         resultElement.innerHTML = `<div class="spinner">${emojis[Math.floor(Math.random() * emojis.length)]}</div>`;
 
-        if (spinTime >= 3000) {
+        if (spinTime >= 1000) {
             clearInterval(spinInterval);
             showResult(isWin, price);
             rouletteButtons.forEach(btn => btn.disabled = false);
