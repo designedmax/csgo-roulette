@@ -232,6 +232,14 @@ body {
     .bet-buttons, .stats {
         grid-template-columns: 1fr;
     }
+    
+    .achievements-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .achievement-item {
+        padding: 12px;
+    }
 }
 
 .back-btn {
