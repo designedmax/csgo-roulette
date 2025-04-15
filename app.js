@@ -1,5 +1,9 @@
 let tg = window.Telegram.WebApp;
+if (!tg) {
+    tg = { expand: () => {}, showPopup: () => {}, initDataUnsafe: {} };
+}
 let userBalance = parseInt(localStorage.getItem('userBalance')) || 1000;
+document.getElementById('balance').textContent = userBalance;
 let achievements = ['new_player'];
 let registrationDate = localStorage.getItem('registrationDate') || new Date().toISOString();
 if (!localStorage.getItem('registrationDate')) {
@@ -21,12 +25,14 @@ let lastBonusDate = localStorage.getItem('lastBonusDate') || null;
 tg.expand();
 
 // Получаем данные пользователя
-const user = tg.initDataUnsafe.user;
-let userName = "Игрок";
+const user = tg.initDataUnsafe.user || {};
+let userName = user.first_name || "Игрок";
 
-if (user) {
-    if (user.first_name) userName = user.first_name;
-}
+// Устанавливаем имя и аватар при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('username').textContent = userName;
+    document.getElementById('user-avatar').src = user?.photo_url || "https://via.placeholder.com/50";
+});
 
 // Отображаем имя и аватар
 document.getElementById("username").textContent = userName;
