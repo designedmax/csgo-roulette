@@ -15,9 +15,8 @@
                 <div class="user-header">
                     <img id="user-avatar" src="" alt="Аватар" class="profile-pic">
                     <div class="user-greeting">
-                        <h1>Привет, <span id="username">Игрок</span>!</h1>
-                                            </div>
-                    <button id="back-to-main" class="balance-btn">Назад</button>
+                        <h1><span id="username">Игрок</span></h1>
+                    </div>
                 </div>
             </div>
         </header>
@@ -35,21 +34,16 @@
                         <span id="total-games">0</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Побед</span>
-                        <span id="win-count">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Достижения</span>
-                        <span id="achievements-count">0</span>
+                        <span class="stat-label">Процент побед</span>
+                        <span id="win-rate">0%</span>
                     </div>
                 </div>
             </section>
 
-            <section class="profile">
+            <section id="achievements-section">
                 <h2>Достижения</h2>
-                <div id="achievements-list" class="achievements-container"></div>
+                <div id="achievements-list"></div>
             </section>
-        </main>
 
             <section id="history-section">
                 <div class="history-header">
@@ -59,7 +53,8 @@
                 <div id="history-list"></div>
             </section>
 
-            </main>
+            <button id="back-to-main" class="balance-btn">Вернуться на главную</button>
+        </main>
     </div>
 </body>
 </html>

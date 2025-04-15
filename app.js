@@ -1,24 +1,5 @@
 let tg = window.Telegram.WebApp;
-if (!tg) {
-    tg = { expand: () => {}, showPopup: () => {}, initDataUnsafe: { user: {} } };
-}
-
-// Инициализация пользователя
-const initUser = () => {
-    const user = tg.initDataUnsafe.user || {};
-    const userName = user.first_name || "Игрок";
-    const userAvatar = user?.photo_url || "https://via.placeholder.com/50";
-    
-    const usernameElements = document.querySelectorAll('#username');
-    const avatarElements = document.querySelectorAll('#user-avatar');
-    
-    usernameElements.forEach(el => el.textContent = userName);
-    avatarElements.forEach(el => el.src = userAvatar);
-};
-
-document.addEventListener('DOMContentLoaded', initUser);
 let userBalance = parseInt(localStorage.getItem('userBalance')) || 1000;
-document.getElementById('balance').textContent = userBalance;
 let achievements = ['new_player'];
 let registrationDate = localStorage.getItem('registrationDate') || new Date().toISOString();
 if (!localStorage.getItem('registrationDate')) {
@@ -27,9 +8,7 @@ if (!localStorage.getItem('registrationDate')) {
 if (localStorage.getItem('achievements')) {
     const storedAchievements = JSON.parse(localStorage.getItem('achievements'));
     if (!storedAchievements.includes('new_player')) {
-        storedAchievements.unshift('new_player');
-    } else {
-        storedAchievements = storedAchievements.filter(a => a !== 'new_player').concat('new_player');
+        storedAchievements.push('new_player');
     }
     achievements = storedAchievements;
 }
@@ -40,16 +19,12 @@ let lastBonusDate = localStorage.getItem('lastBonusDate') || null;
 tg.expand();
 
 // Получаем данные пользователя
-const user = tg.initDataUnsafe.user || {};
-let userName = user.first_name || "Игрок";
+const user = tg.initDataUnsafe.user;
+let userName = "Игрок";
 
-// Устанавливаем имя и аватар при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    const user = tg.initDataUnsafe.user || {};
-    const userName = user.first_name || "Игрок";
-    document.getElementById('username').textContent = userName;
-    document.getElementById('user-avatar').src = user?.photo_url || "https://via.placeholder.com/50";
-});
+if (user) {
+    if (user.first_name) userName = user.first_name;
+}
 
 // Отображаем имя и аватар
 document.getElementById("username").textContent = userName;
@@ -73,38 +48,21 @@ function updateBalance(amount) {
     document.getElementById('balance').textContent = userBalance;
 }
 
-const achievementsList = {
-        'first_win': { title: 'Первая победа', description: 'Одержать первую победу', condition: 1 },
-        'big_win': { title: 'Крупный выигрыш', description: 'Выиграть от 1000₽ за раз', condition: 1000 },
-        'balance': { title: 'Богач', description: 'Накопить 5000₽ на балансе', condition: 5000 },
-        'new_player': { title: 'Новый игрок', description: 'Начать играть', condition: 0 },
-        'winner': { title: 'Победитель', description: '10 побед', condition: 10 },
-        'loser': { title: 'Лошок', description: '30 проигрышей', condition: 30 }
+function checkAchievement(type, value) {
+    const achievementsList = {
+        'first_win': { title: 'Первая победа', condition: 1 },
+        'big_win': { title: 'Крупный выигрыш', condition: 1000 },
+        'balance': { title: 'Богач', condition: 5000 },
+        'new_player': { title: 'Новый игрок', condition: 0 },
+        'winner': { title: 'Победитель', condition: 10 },
+        'loser': { title: 'Лошок', condition: 30 }
     };
 
-function checkAchievement(type, value) {
     if (!achievements.includes(type)) {
         if (type === 'winner') {
             const history = JSON.parse(localStorage.getItem('csgoRouletteHistory')) || [];
             const totalWins = history.filter(entry => entry.status === 'win').length;
-            if (type === 'first_win' ? history.some(h => h.result === 'win') : totalWins >= achievementsList[type].condition) {
-                achievements.push(type);
-                localStorage.setItem('achievements', JSON.stringify(achievements));
-                updateAchievementsUI();
-            }
-        } else if ((type === 'balance' && userBalance >= value) ||
-            (type === 'big_win' && value >= achievementsList[type].condition)) {
-            achievements.push(type);
-            localStorage.setItem('achievements', JSON.stringify(achievements));
-            updateAchievementsUI();
-        }
-    }
-
-    if (!achievements.includes(type)) {
-        if (type === 'winner') {
-            const history = JSON.parse(localStorage.getItem('csgoRouletteHistory')) || [];
-            const totalWins = history.filter(entry => entry.status === 'win').length;
-            if (type === 'first_win' ? history.some(h => h.result === 'win') : totalWins >= achievementsList[type].condition) {
+            if (totalWins >= achievementsList[type].condition) {
                 achievements.push(type);
                 localStorage.setItem('achievements', JSON.stringify(achievements));
                 updateAchievementsUI();
@@ -153,7 +111,7 @@ function spinRoulette(price) {
         const emojis = ["🔫", "💣", "🔪", "💰", "🎯"];
         resultElement.innerHTML = `<div class="spinner">${emojis[Math.floor(Math.random() * emojis.length)]}</div>`;
 
-        if (spinTime >= 1000) {
+        if (spinTime >= 3000) {
             clearInterval(spinInterval);
             showResult(isWin, price);
             rouletteButtons.forEach(btn => btn.disabled = false);
@@ -216,10 +174,11 @@ function clearHistory() {
 
 function updateProfileStats() {
     const totalGames = winCount + loseCount;
+    const winRate = totalGames > 0 ? Math.round((winCount / totalGames) * 100) : 0;
+    
     document.getElementById('registration-date').textContent = new Date(registrationDate).toLocaleDateString();
-    document.getElementById('total-games').textContent = winCount + loseCount;
-    document.getElementById('win-count').textContent = winCount;
-    document.getElementById('achievements-count').textContent = achievements.length;
+    document.getElementById('total-games').textContent = totalGames;
+    document.getElementById('win-rate').textContent = `${winRate}%`;
 }
 
 function updateHistoryUI() {
@@ -242,9 +201,6 @@ function updateHistoryUI() {
 // Инициализация для страницы профиля
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('registration-date')) {
-        const userData = JSON.parse(localStorage.getItem('csgoRouletteUser')) || {};
-        document.getElementById('username').textContent = userData.name || 'Игрок';
-        document.getElementById('user-avatar').src = userData.avatar || 'default-avatar.jpg';
         updateProfileStats();
         updateHistoryUI();
         updateAchievementsUI();
@@ -303,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Обработчик для кнопки "Крутить снова"
     document.getElementById('spin-again').addEventListener('click', () => {
         document.getElementById('result').classList.add('hidden');
-        document.querySelectorAll('.roulette-btn').forEach(btn => btn.disabled = false);
     });
 
     // Обработчики для кнопок баланса
@@ -346,17 +301,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateAchievementsUI() {
-    const achievementsContainer = document.getElementById('achievements-list');
-    const savedAchievements = JSON.parse(localStorage.getItem('achievements')) || [];
-    
-    achievementsList.innerHTML = savedAchievements.length === 0 
-        ? "<p>Достижений пока нет.</p>"
-        : savedAchievements.map(ach => {
-            const achievementData = achievementsList[ach] || { title: ach, condition: 0 };
-            return `
-                <div class="achievement-item">
-                    <h4>${achievementData.title}</h4>
-                    <p>Условие: ${achievementData.condition}</p>
-                </div>`;
-        }).join('');
+    const achievementsList = document.getElementById('achievements-list');
+    const allAchievements = [
+        { id: 'new_player', title: 'Новый игрок', description: 'Добро пожаловать в игру!' },
+        { id: 'first_win', title: 'Первая победа', description: 'Выиграйте свой первый скин' },
+        { id: 'big_win', title: 'Крупный выигрыш', description: 'Выиграйте ставку от 1000₽' },
+        { id: 'balance', title: 'Богач', description: 'Накопите 5000₽ на балансе' },
+        { id: 'winner', title: 'Победитель', description: 'Выиграйте 10 раз' },
+        { id: 'loser', title: 'Лошок', description: 'Проиграйте 30 раз' }
+    ];
+
+    achievementsList.innerHTML = allAchievements.map(ach => `
+        <div class="achievement-item ${achievements.includes(ach.id) ? 'unlocked' : ''}">
+            <h4>${ach.title}</h4>
+            <p>${ach.description}</p>
+        </div>
+    `).join('');
 }
