@@ -1,6 +1,10 @@
 let tg = window.Telegram.WebApp;
 let userBalance = parseInt(localStorage.getItem('userBalance')) || 1000;
 let achievements = ['new_player'];
+let registrationDate = localStorage.getItem('registrationDate') || new Date().toISOString();
+if (!localStorage.getItem('registrationDate')) {
+    localStorage.setItem('registrationDate', registrationDate);
+}
 if (localStorage.getItem('achievements')) {
     const storedAchievements = JSON.parse(localStorage.getItem('achievements'));
     if (!storedAchievements.includes('new_player')) {
@@ -169,6 +173,15 @@ function clearHistory() {
     updateHistoryUI();
 }
 
+function updateProfileStats() {
+    const totalGames = winCount + loseCount;
+    const winRate = totalGames > 0 ? Math.round((winCount / totalGames) * 100) : 0;
+    
+    document.getElementById('registration-date').textContent = new Date(registrationDate).toLocaleDateString();
+    document.getElementById('total-games').textContent = totalGames;
+    document.getElementById('win-rate').textContent = `${winRate}%`;
+}
+
 function updateHistoryUI() {
     const historyList = document.getElementById("history-list");
     const history = JSON.parse(localStorage.getItem("csgoRouletteHistory")) || [];
@@ -182,6 +195,8 @@ function updateHistoryUI() {
                 <span>${entry.status === "win" ? "🏆 " + entry.skin : "❌ Проигрыш"}</span>
             </div>
         `).join("");
+    
+    updateProfileStats();
 }
 
 // Инициализация после загрузки страницы
