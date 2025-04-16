@@ -1,144 +1,86 @@
 import { CONFIG } from './config.js';
+import { database } from './firebase.js';
 
 class User {
     constructor() {
-        this.userId = null;
-        this.userData = null;
-        this.DATA_VERSION = 1;
-        this.database = window.database;
-        console.log('User class initialized');
+        this.tg = window.Telegram.WebApp;
+        this.userId = this.tg.initDataUnsafe?.user?.id || 'default_user';
+        this.userData = {
+            name: this.tg.initDataUnsafe?.user?.first_name || 'Гость',
+            balance: 0,
+            totalGames: 0,
+            totalWins: 0,
+            totalLosses: 0,
+            betHistory: [],
+            achievements: CONFIG.ACHIEVEMENTS.map(achievement => ({
+                ...achievement,
+                unlocked: false
+            })),
+            totalAchievements: 0,
+            lastBonusTime: 0
+        };
+        this.database = database;
     }
 
     async initUser() {
         try {
-            console.log('Starting user initialization...');
-            
-            // Initialize Telegram WebApp
-            const tg = window.Telegram.WebApp;
-            if (!tg) {
-                throw new Error('Telegram WebApp not found');
-            }
-            console.log('Telegram WebApp found');
-            
-            tg.ready();
-            tg.expand();
-            console.log('Telegram WebApp initialized');
+            console.log('Initializing user with ID:', this.userId);
+            console.log('Telegram user data:', this.tg.initDataUnsafe?.user);
 
-            // Get user data from Telegram
-            const user = tg.initDataUnsafe.user;
-            console.log('Telegram user data:', user);
-
-            if (!user || !user.id) {
+            if (!this.tg.initDataUnsafe?.user) {
                 throw new Error('No user data from Telegram');
             }
 
-            this.userId = user.id;
-            console.log('User ID:', this.userId);
+            // Try to load existing user data from Firebase
+            const snapshot = await this.database.ref(`users/${this.userId}`).once('value');
+            const savedData = snapshot.val();
 
-            // Initialize fresh user data structure
-            this.userData = {
-                id: this.userId,
-                firstName: user.first_name || 'Игрок',
-                lastName: user.last_name || '',
-                username: user.username || '',
-                photoUrl: user.photo_url || 'img/default-avatar.png',
-                balance: 0,
-                registrationDate: new Date().toISOString(),
-                totalGames: 0,
-                totalWins: 0,
-                totalLosses: 0,
-                totalAchievements: 0,
-                achievements: CONFIG.ACHIEVEMENTS.map(achievement => ({
-                    ...achievement,
-                    unlocked: false
-                })),
-                betHistory: [],
-                lastBonusTime: 0,
-                dataVersion: this.DATA_VERSION
-            };
-            console.log('Initial user data created:', this.userData);
-
-            // Try to load existing data from Firebase
-            try {
-                console.log('Attempting to load data from Firebase...');
-                const snapshot = await this.database.ref(`users/${this.userId}`).once('value');
-                console.log('Firebase snapshot:', snapshot.val());
-                
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    console.log('Loaded data from Firebase:', data);
-                    
-                    // Update user data with existing data
-                    this.userData = {
-                        ...this.userData,
-                        ...data,
-                        id: this.userId,
-                        firstName: data.firstName || this.userData.firstName,
-                        lastName: data.lastName || this.userData.lastName,
-                        username: data.username || this.userData.username,
-                        photoUrl: data.photoUrl || this.userData.photoUrl,
-                        achievements: data.achievements || this.userData.achievements,
-                        betHistory: data.betHistory || this.userData.betHistory
-                    };
-                    console.log('Updated user data:', this.userData);
-                } else {
-                    console.log('No existing data found, creating new user');
-                    await this.saveUserData();
-                }
-            } catch (error) {
-                console.error('Error loading data from Firebase:', error);
+            if (savedData) {
+                console.log('Loaded saved user data:', savedData);
+                this.userData = {
+                    ...this.userData,
+                    ...savedData,
+                    achievements: CONFIG.ACHIEVEMENTS.map(achievement => ({
+                        ...achievement,
+                        unlocked: savedData.achievements?.find(a => a.id === achievement.id)?.unlocked || false
+                    }))
+                };
+            } else {
+                console.log('No saved data found, using default values');
+                // Save initial user data to Firebase
                 await this.saveUserData();
             }
 
             this.updateUI();
-            console.log('User initialization completed successfully');
+            return true;
         } catch (error) {
-            console.error('Error in initUser:', error);
+            console.error('Error initializing user:', error);
             throw error;
         }
     }
 
     async saveUserData() {
         try {
-            if (!this.userId) {
-                throw new Error('Cannot save data: no user ID');
-            }
-
-            console.log('Saving user data...');
-            
-            // Calculate total achievements
-            this.userData.totalAchievements = this.userData.achievements.filter(a => a.unlocked).length;
-            
-            // Prepare data for Firebase
-            const userDataForFirebase = {
-                id: this.userData.id,
-                firstName: this.userData.firstName,
-                lastName: this.userData.lastName,
-                username: this.userData.username,
-                photoUrl: this.userData.photoUrl,
-                balance: this.userData.balance,
-                registrationDate: this.userData.registrationDate,
-                totalGames: this.userData.totalGames,
-                totalWins: this.userData.totalWins,
-                totalLosses: this.userData.totalLosses,
-                totalAchievements: this.userData.totalAchievements,
-                achievements: this.userData.achievements,
-                betHistory: this.userData.betHistory,
-                lastBonusTime: this.userData.lastBonusTime,
-                dataVersion: this.DATA_VERSION
-            };
-
-            console.log('Saving to Firebase:', userDataForFirebase);
-            await this.database.ref(`users/${this.userId}`).set(userDataForFirebase);
+            await this.database.ref(`users/${this.userId}`).set(this.userData);
             console.log('User data saved successfully');
-
-            // Verify the save
-            const snapshot = await this.database.ref(`users/${this.userId}`).once('value');
-            console.log('Verification - Data in Firebase:', snapshot.val());
         } catch (error) {
             console.error('Error saving user data:', error);
             throw error;
         }
+    }
+
+    updateUI() {
+        // Update main page
+        document.getElementById('user-balance').textContent = `${this.userData.balance} ₽`;
+        
+        // Update profile page
+        document.getElementById('user-avatar').src = this.tg.initDataUnsafe?.user?.photo_url || '';
+        document.getElementById('user-name').textContent = this.userData.name;
+        document.getElementById('profile-balance').textContent = `${this.userData.balance} ₽`;
+        document.getElementById('total-games').textContent = this.userData.totalGames;
+        document.getElementById('total-wins').textContent = this.userData.totalWins;
+        document.getElementById('total-losses').textContent = this.userData.totalLosses;
+        document.getElementById('total-achievements').textContent = this.userData.totalAchievements;
     }
 
     async updateBalance(amount) {
@@ -148,9 +90,6 @@ class User {
     }
 
     async addBetToHistory(bet) {
-        if (!this.userData.betHistory) {
-            this.userData.betHistory = [];
-        }
         this.userData.betHistory.unshift(bet);
         if (this.userData.betHistory.length > 50) {
             this.userData.betHistory.pop();
@@ -163,38 +102,11 @@ class User {
         await this.saveUserData();
     }
 
-    updateUI() {
-        try {
-            // Update user info
-            const userName = document.getElementById('user-name');
-            const userBalance = document.getElementById('user-balance');
-            const userAvatar = document.getElementById('user-avatar');
-            const profileName = document.getElementById('profile-name');
-            const profileAvatar = document.getElementById('profile-avatar');
-            const registrationDate = document.getElementById('registration-date');
-            const totalGames = document.getElementById('total-games');
-            const totalWins = document.getElementById('total-wins');
-            const totalAchievements = document.getElementById('total-achievements');
-
-            if (userName) userName.textContent = this.userData.firstName;
-            if (userBalance) userBalance.textContent = this.userData.balance;
-            if (userAvatar) userAvatar.src = this.userData.photoUrl;
-            if (profileName) profileName.textContent = this.userData.firstName;
-            if (profileAvatar) profileAvatar.src = this.userData.photoUrl;
-            if (registrationDate) registrationDate.textContent = new Date(this.userData.registrationDate).toLocaleDateString();
-            if (totalGames) totalGames.textContent = this.userData.totalGames;
-            if (totalWins) totalWins.textContent = this.userData.totalWins;
-            if (totalAchievements) totalAchievements.textContent = this.userData.totalAchievements;
-
-            console.log('UI updated with data:', this.userData);
-        } catch (error) {
-            console.error('Error updating UI:', error);
-        }
-    }
-
     async canGetDailyBonus() {
         const now = Date.now();
-        return now - this.userData.lastBonusTime >= 24 * 60 * 60 * 1000; // 24 hours
+        const lastBonusTime = this.userData.lastBonusTime || 0;
+        const timeSinceLastBonus = now - lastBonusTime;
+        return timeSinceLastBonus >= 24 * 60 * 60 * 1000; // 24 hours
     }
 
     async getDailyBonus() {

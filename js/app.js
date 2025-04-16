@@ -20,12 +20,16 @@ if (!tg) {
 
 // Log Telegram data
 console.log('Telegram init data:', tg.initDataUnsafe);
-console.log('Telegram user:', tg.initDataUnsafe.user);
+console.log('Telegram user:', tg.initDataUnsafe?.user);
 
 // Initialize application
 async function initApp() {
     try {
         console.log('Starting application initialization...');
+        
+        if (!tg.initDataUnsafe?.user) {
+            throw new Error('No user data from Telegram');
+        }
         
         // Initialize user first
         const user = new User();
