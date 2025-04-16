@@ -15,6 +15,19 @@ const nextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'ALLOW-FROM https://telegram.org'
+          }
+        ]
+      }
+    ]
+  }
 }
 
 module.exports = nextConfig 
