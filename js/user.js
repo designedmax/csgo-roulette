@@ -1,89 +1,96 @@
+import { database } from './firebase.js';
+
 class User {
     constructor() {
         this.initUser();
     }
 
-    initUser() {
+    async initUser() {
         const tg = window.Telegram.WebApp;
         tg.ready();
         
+        this.userId = tg.initDataUnsafe.user?.id;
+        
+        // Initialize user data structure
         this.userData = {
-            id: tg.initDataUnsafe.user?.id,
+            id: this.userId,
             firstName: tg.initDataUnsafe.user?.first_name || 'Игрок',
             lastName: tg.initDataUnsafe.user?.last_name || '',
             username: tg.initDataUnsafe.user?.username || '',
             photoUrl: tg.initDataUnsafe.user?.photo_url || 'img/default-avatar.png',
-            balance: this.getStoredBalance(),
-            registrationDate: this.getStoredRegistrationDate(),
-            totalGames: this.getStoredTotalGames(),
-            totalWins: this.getStoredTotalWins(),
-            achievements: this.getStoredAchievements(),
-            betHistory: this.getStoredBetHistory(),
-            lastBonusTime: this.getStoredLastBonusTime()
+            balance: 0,
+            registrationDate: new Date().toISOString(),
+            totalGames: 0,
+            totalWins: 0,
+            totalLosses: 0,
+            totalAchievements: 0,
+            achievements: CONFIG.ACHIEVEMENTS,
+            betHistory: [],
+            lastBonusTime: 0
         };
 
-        this.updateUI();
-    }
-
-    getStoredBalance() {
-        return parseInt(localStorage.getItem('balance')) || 0;
-    }
-
-    getStoredRegistrationDate() {
-        return localStorage.getItem('registrationDate') || new Date().toISOString();
-    }
-
-    getStoredTotalGames() {
-        return parseInt(localStorage.getItem('totalGames')) || 0;
-    }
-
-    getStoredTotalWins() {
-        return parseInt(localStorage.getItem('totalWins')) || 0;
-    }
-
-    getStoredAchievements() {
-        const stored = localStorage.getItem('achievements');
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            // Ensure all achievements from CONFIG exist
-            CONFIG.ACHIEVEMENTS.forEach(configAchievement => {
-                if (!parsed.find(a => a.id === configAchievement.id)) {
-                    parsed.push({
-                        ...configAchievement,
-                        unlocked: false
-                    });
-                }
-            });
-            return parsed;
+        // Try to load user data from Firebase
+        try {
+            const snapshot = await database.ref(`users/${this.userId}`).once('value');
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                // Update only necessary fields, keep existing data
+                this.userData = {
+                    ...this.userData,
+                    ...data,
+                    id: this.userId, // Ensure ID is not overwritten
+                    firstName: data.firstName || this.userData.firstName,
+                    lastName: data.lastName || this.userData.lastName,
+                    username: data.username || this.userData.username,
+                    photoUrl: data.photoUrl || this.userData.photoUrl
+                };
+            } else {
+                // Save initial user data to Firebase
+                await this.saveUserData();
+            }
+        } catch (error) {
+            console.error('Error loading user data:', error);
         }
-        return JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
-    }
 
-    getStoredBetHistory() {
-        return JSON.parse(localStorage.getItem('betHistory')) || [];
-    }
-
-    getStoredLastBonusTime() {
-        return parseInt(localStorage.getItem('lastBonusTime')) || 0;
-    }
-
-    saveUserData() {
-        localStorage.setItem('balance', this.userData.balance);
-        localStorage.setItem('registrationDate', this.userData.registrationDate);
-        localStorage.setItem('totalGames', this.userData.totalGames);
-        localStorage.setItem('totalWins', this.userData.totalWins);
-        localStorage.setItem('achievements', JSON.stringify(this.userData.achievements));
-        localStorage.setItem('betHistory', JSON.stringify(this.userData.betHistory));
-        localStorage.setItem('lastBonusTime', this.userData.lastBonusTime);
-    }
-
-    updateBalance(amount) {
-        this.userData.balance += amount;
-        this.saveUserData();
         this.updateUI();
     }
 
-    addBetToHistory(bet) {
+    async saveUserData() {
+        try {
+            // Calculate total achievements
+            this.userData.totalAchievements = this.userData.achievements.filter(a => a.unlocked).length;
+            
+            // Prepare data for Firebase
+            const userDataForFirebase = {
+                id: this.userData.id,
+                firstName: this.userData.firstName,
+                lastName: this.userData.lastName,
+                username: this.userData.username,
+                photoUrl: this.userData.photoUrl,
+                balance: this.userData.balance,
+                registrationDate: this.userData.registrationDate,
+                totalGames: this.userData.totalGames,
+                totalWins: this.userData.totalWins,
+                totalLosses: this.userData.totalLosses,
+                totalAchievements: this.userData.totalAchievements,
+                achievements: this.userData.achievements,
+                betHistory: this.userData.betHistory,
+                lastBonusTime: this.userData.lastBonusTime
+            };
+
+            await database.ref(`users/${this.userId}`).set(userDataForFirebase);
+        } catch (error) {
+            console.error('Error saving user data:', error);
+        }
+    }
+
+    async updateBalance(amount) {
+        this.userData.balance += amount;
+        await this.saveUserData();
+        this.updateUI();
+    }
+
+    async addBetToHistory(bet) {
         if (!this.userData.betHistory) {
             this.userData.betHistory = [];
         }
@@ -91,12 +98,21 @@ class User {
         if (this.userData.betHistory.length > 50) {
             this.userData.betHistory.pop();
         }
-        this.saveUserData();
+        
+        // Update game statistics
+        this.userData.totalGames++;
+        if (bet.win) {
+            this.userData.totalWins++;
+        } else {
+            this.userData.totalLosses++;
+        }
+        
+        await this.saveUserData();
     }
 
-    clearBetHistory() {
+    async clearBetHistory() {
         this.userData.betHistory = [];
-        this.saveUserData();
+        await this.saveUserData();
     }
 
     updateUI() {
@@ -111,10 +127,7 @@ class User {
         document.getElementById('registration-date').textContent = new Date(this.userData.registrationDate).toLocaleDateString();
         document.getElementById('total-games').textContent = this.userData.totalGames;
         document.getElementById('total-wins').textContent = this.userData.totalWins;
-        
-        // Update total achievements count
-        const totalAchievements = this.userData.achievements.filter(a => a.unlocked).length;
-        document.getElementById('total-achievements').textContent = totalAchievements;
+        document.getElementById('total-achievements').textContent = this.userData.totalAchievements;
         
         // Force update achievements display
         const achievements = new Achievements(this);
@@ -122,16 +135,16 @@ class User {
         achievements.updateAchievementsDisplay();
     }
 
-    canGetDailyBonus() {
+    async canGetDailyBonus() {
         const now = Date.now();
         return now - this.userData.lastBonusTime >= CONFIG.BONUS_COOLDOWN;
     }
 
-    getDailyBonus() {
-        if (this.canGetDailyBonus()) {
+    async getDailyBonus() {
+        if (await this.canGetDailyBonus()) {
             this.userData.balance += CONFIG.DAILY_BONUS_AMOUNT;
             this.userData.lastBonusTime = Date.now();
-            this.saveUserData();
+            await this.saveUserData();
             this.updateUI();
             return true;
         }
