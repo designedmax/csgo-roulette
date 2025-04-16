@@ -91,17 +91,20 @@ class Roulette {
             };
         }
 
-        // Add to history
+        // Add to history and update display
         this.user.addBetToHistory({
             ...result,
             timestamp: new Date().toISOString()
         });
 
         // Update achievements
-        this.checkAchievements(result);
+        const achievements = new Achievements(this.user);
+        achievements.checkAndUnlockAchievements();
+        achievements.updateAchievementsDisplay();
 
         // Save user data
         this.user.saveUserData();
+        this.user.updateUI();
 
         return result;
     }

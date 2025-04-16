@@ -18,8 +18,7 @@ class History {
         const historyContainer = document.getElementById('bets-history');
         historyContainer.innerHTML = '';
 
-        // Ensure we have the latest history
-        const betHistory = this.user.getStoredBetHistory();
+        const betHistory = this.user.userData.betHistory;
         
         if (betHistory && betHistory.length > 0) {
             betHistory.forEach(bet => {
@@ -43,7 +42,7 @@ class History {
                 } else {
                     historyItem.innerHTML = `
                         <span>${formattedDate}</span>
-                        <span>Проигрыш: ${bet.amount} ₽</span>
+                        <span>Проигрыш: ${Math.abs(bet.amount)} ₽</span>
                     `;
                 }
 
