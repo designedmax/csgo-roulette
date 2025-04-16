@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "games": {
+      ".read": true,
+      ".write": "auth != null",
+      "$gameId": {
+        ".validate": "newData.hasChildren(['userId', 'result', 'date'])",
+        "userId": {
+          ".validate": "newData.isString()"
+        },
+        "result": {
+          ".validate": "newData.isBoolean()"
+        },
+        "date": {
+          ".validate": "newData.isNumber()"
+        }
+      }
+    }
+  }
+} 
