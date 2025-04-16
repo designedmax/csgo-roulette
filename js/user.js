@@ -4,7 +4,7 @@ class User {
     constructor() {
         this.userId = null;
         this.userData = null;
-        this.DATA_VERSION = 3; // Increment version to force reset
+        this.DATA_VERSION = 1;
     }
 
     async initUser() {
@@ -19,10 +19,6 @@ class User {
                 console.error('No user ID found in Telegram WebApp data');
                 return;
             }
-
-            // Force clear old data from Firebase
-            await database.ref(`users/${this.userId}`).remove();
-            console.log('Cleared old data from Firebase');
 
             // Initialize fresh user data structure
             this.userData = {
@@ -46,11 +42,29 @@ class User {
                 dataVersion: this.DATA_VERSION
             };
 
-            console.log('Initial user data:', this.userData);
-
-            // Save initial data to Firebase
-            await this.saveUserData();
-            console.log('Initial data saved to Firebase');
+            // Try to load existing data from Firebase
+            const snapshot = await database.ref(`users/${this.userId}`).once('value');
+            
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                console.log('Loaded data from Firebase:', data);
+                
+                // Update user data with existing data
+                this.userData = {
+                    ...this.userData,
+                    ...data,
+                    id: this.userId,
+                    firstName: data.firstName || this.userData.firstName,
+                    lastName: data.lastName || this.userData.lastName,
+                    username: data.username || this.userData.username,
+                    photoUrl: data.photoUrl || this.userData.photoUrl,
+                    achievements: data.achievements || this.userData.achievements,
+                    betHistory: data.betHistory || this.userData.betHistory
+                };
+            } else {
+                console.log('No existing data found, creating new user');
+                await this.saveUserData();
+            }
 
             this.updateUI();
         } catch (error) {
@@ -87,13 +101,8 @@ class User {
                 dataVersion: this.DATA_VERSION
             };
 
-            console.log('Saving to Firebase:', userDataForFirebase);
             await database.ref(`users/${this.userId}`).set(userDataForFirebase);
-            console.log('User data saved successfully');
-
-            // Verify the save
-            const snapshot = await database.ref(`users/${this.userId}`).once('value');
-            console.log('Verification - Data in Firebase:', snapshot.val());
+            console.log('User data saved to Firebase');
         } catch (error) {
             console.error('Error saving user data:', error);
         }
@@ -113,15 +122,6 @@ class User {
         if (this.userData.betHistory.length > 50) {
             this.userData.betHistory.pop();
         }
-        
-        // Update game statistics
-        this.userData.totalGames++;
-        if (bet.win) {
-            this.userData.totalWins++;
-        } else {
-            this.userData.totalLosses++;
-        }
-        
         await this.saveUserData();
     }
 
@@ -134,30 +134,25 @@ class User {
         // Update user info
         document.getElementById('user-name').textContent = this.userData.firstName;
         document.getElementById('user-balance').textContent = this.userData.balance;
-        document.getElementById('user-avatar').src = this.userData.photoUrl || 'default-avatar.png';
+        document.getElementById('user-avatar').src = this.userData.photoUrl;
 
         // Update profile page
         document.getElementById('profile-name').textContent = this.userData.firstName;
-        document.getElementById('profile-avatar').src = this.userData.photoUrl || 'default-avatar.png';
+        document.getElementById('profile-avatar').src = this.userData.photoUrl;
         document.getElementById('registration-date').textContent = new Date(this.userData.registrationDate).toLocaleDateString();
         document.getElementById('total-games').textContent = this.userData.totalGames;
         document.getElementById('total-wins').textContent = this.userData.totalWins;
         document.getElementById('total-achievements').textContent = this.userData.totalAchievements;
-        
-        // Force update achievements display
-        const achievements = new Achievements(this);
-        achievements.initializeAchievements();
-        achievements.updateAchievementsDisplay();
     }
 
     async canGetDailyBonus() {
         const now = Date.now();
-        return now - this.userData.lastBonusTime >= CONFIG.BONUS_COOLDOWN;
+        return now - this.userData.lastBonusTime >= 24 * 60 * 60 * 1000; // 24 hours
     }
 
     async getDailyBonus() {
         if (await this.canGetDailyBonus()) {
-            this.userData.balance += CONFIG.DAILY_BONUS_AMOUNT;
+            this.userData.balance += 5000;
             this.userData.lastBonusTime = Date.now();
             await this.saveUserData();
             this.updateUI();
