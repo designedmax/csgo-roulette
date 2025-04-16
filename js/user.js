@@ -4,6 +4,7 @@ class User {
     constructor() {
         this.userId = null;
         this.userData = null;
+        this.DATA_VERSION = 2; // Increment this number to force data reset
     }
 
     async initUser() {
@@ -25,9 +26,13 @@ class User {
             totalWins: 0,
             totalLosses: 0,
             totalAchievements: 0,
-            achievements: CONFIG.ACHIEVEMENTS,
+            achievements: CONFIG.ACHIEVEMENTS.map(achievement => ({
+                ...achievement,
+                unlocked: false
+            })),
             betHistory: [],
-            lastBonusTime: 0
+            lastBonusTime: 0,
+            dataVersion: this.DATA_VERSION
         };
 
         // Try to load user data from Firebase
@@ -35,17 +40,28 @@ class User {
             const snapshot = await database.ref(`users/${this.userId}`).once('value');
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                // Update only necessary fields, keep existing data
-                this.userData = {
-                    ...this.userData,
-                    ...data,
-                    id: this.userId, // Ensure ID is not overwritten
-                    firstName: data.firstName || this.userData.firstName,
-                    lastName: data.lastName || this.userData.lastName,
-                    username: data.username || this.userData.username,
-                    photoUrl: data.photoUrl || this.userData.photoUrl
-                };
+                console.log('Loaded data from Firebase:', data);
+                
+                // Check if data version is outdated
+                if (!data.dataVersion || data.dataVersion < this.DATA_VERSION) {
+                    console.log('Data version outdated, resetting user data');
+                    // Save new version of data
+                    await this.saveUserData();
+                } else {
+                    // Update only necessary fields, keep existing data
+                    this.userData = {
+                        ...this.userData,
+                        ...data,
+                        id: this.userId, // Ensure ID is not overwritten
+                        firstName: data.firstName || this.userData.firstName,
+                        lastName: data.lastName || this.userData.lastName,
+                        username: data.username || this.userData.username,
+                        photoUrl: data.photoUrl || this.userData.photoUrl,
+                        achievements: data.achievements || this.userData.achievements
+                    };
+                }
             } else {
+                console.log('No data in Firebase, creating new user');
                 // Save initial user data to Firebase
                 await this.saveUserData();
             }
@@ -76,7 +92,8 @@ class User {
                 totalAchievements: this.userData.totalAchievements,
                 achievements: this.userData.achievements,
                 betHistory: this.userData.betHistory,
-                lastBonusTime: this.userData.lastBonusTime
+                lastBonusTime: this.userData.lastBonusTime,
+                dataVersion: this.DATA_VERSION
             };
 
             await database.ref(`users/${this.userId}`).set(userDataForFirebase);

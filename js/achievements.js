@@ -13,13 +13,15 @@ class Achievements {
 
     async initializeAchievements() {
         // Get achievements from user data in Firebase
-        this.user.userData.achievements = CONFIG.ACHIEVEMENTS.map(achievement => ({
-            ...achievement,
-            unlocked: this.user.userData.achievements?.find(a => a.id === achievement.id)?.unlocked || false
-        }));
+        if (!this.user.userData.achievements) {
+            this.user.userData.achievements = CONFIG.ACHIEVEMENTS.map(achievement => ({
+                ...achievement,
+                unlocked: false
+            }));
+            await this.user.saveUserData();
+        }
 
-        // Save updated achievements to Firebase
-        await this.user.saveUserData();
+        this.updateAchievementsDisplay();
     }
 
     updateTotalAchievementsCount() {
