@@ -42,7 +42,11 @@ class User {
     }
 
     getStoredAchievements() {
-        return JSON.parse(localStorage.getItem('achievements')) || CONFIG.ACHIEVEMENTS;
+        const stored = localStorage.getItem('achievements');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        return JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
     }
 
     getStoredBetHistory() {

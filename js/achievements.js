@@ -12,13 +12,8 @@ class Achievements {
 
     initializeAchievements() {
         // Get stored achievements
-        const storedAchievements = localStorage.getItem('achievements');
-        if (storedAchievements) {
-            this.user.userData.achievements = JSON.parse(storedAchievements);
-        } else {
-            // Initialize with new data if no stored achievements
-            this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
-        }
+        const storedAchievements = this.user.getStoredAchievements();
+        this.user.userData.achievements = storedAchievements;
         
         // Check all achievements through history
         const betHistory = this.user.userData.betHistory || [];
@@ -58,7 +53,6 @@ class Achievements {
         });
 
         // Save achievements state
-        localStorage.setItem('achievements', JSON.stringify(this.user.userData.achievements));
         this.user.saveUserData();
         
         // Update display
