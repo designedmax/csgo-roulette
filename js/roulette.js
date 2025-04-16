@@ -91,8 +91,9 @@ class Roulette {
             };
         }
 
-        // Add to history and update display
-        this.user.addBetToHistory({
+        // Add to history
+        const history = new History(this.user);
+        history.addBetToHistory({
             ...result,
             timestamp: new Date().toISOString()
         });

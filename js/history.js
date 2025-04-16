@@ -16,11 +16,14 @@ class History {
 
     updateHistoryDisplay() {
         const historyContainer = document.getElementById('bets-history');
+        if (!historyContainer) return; // Если контейнер не найден, выходим
+        
         historyContainer.innerHTML = '';
 
-        const betHistory = this.user.userData.betHistory;
+        // Используем текущую историю из userData
+        const betHistory = this.user.userData.betHistory || [];
         
-        if (betHistory && betHistory.length > 0) {
+        if (betHistory.length > 0) {
             betHistory.forEach(bet => {
                 const historyItem = document.createElement('div');
                 historyItem.className = `bet-history-item ${bet.win ? 'win' : 'lose'}`;
@@ -57,7 +60,14 @@ class History {
     }
 
     addBetToHistory(bet) {
-        this.user.addBetToHistory(bet);
+        if (!this.user.userData.betHistory) {
+            this.user.userData.betHistory = [];
+        }
+        this.user.userData.betHistory.unshift(bet);
+        if (this.user.userData.betHistory.length > 50) {
+            this.user.userData.betHistory.pop();
+        }
+        this.user.saveUserData();
         this.updateHistoryDisplay();
     }
 } 
