@@ -52,6 +52,16 @@ class Achievements {
         });
 
         this.user.saveUserData();
+        
+        // Immediately update the display
+        this.updateAchievementsDisplay();
+        
+        // Update total achievements count in profile
+        const totalAchievements = this.user.userData.achievements.filter(a => a.unlocked).length;
+        const totalAchievementsElement = document.getElementById('total-achievements');
+        if (totalAchievementsElement) {
+            totalAchievementsElement.textContent = totalAchievements;
+        }
     }
 
     updateAchievementsDisplay() {
