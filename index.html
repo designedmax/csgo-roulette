@@ -19,7 +19,10 @@
                     <span id="user-name" class="name"></span>
                     <span id="user-balance" class="balance">0 ₽</span>
                 </div>
-                <button id="profile-btn" class="btn">Профиль</button>
+                <div class="user-actions">
+                    <button id="profile-btn" class="btn">Профиль</button>
+                    <button id="history-btn" class="btn">История</button>
+                </div>
             </div>
 
             <div class="roulette-container">
@@ -78,7 +81,7 @@
                 <div id="achievements-list" class="achievements-list"></div>
             </div>
 
-            <button id="back-btn" class="btn">Назад</button>
+            <button id="profile-back-btn" class="btn">Назад</button>
         </div>
 
         <!-- History Page -->
@@ -86,15 +89,15 @@
             <h3>История ставок</h3>
             <div id="history-list" class="history-list"></div>
             <button id="clear-history" class="btn">Очистить историю</button>
-            <button id="back-btn" class="btn">Назад</button>
+            <button id="history-back-btn" class="btn">Назад</button>
         </div>
     </div>
 
     <!-- Modals -->
-    <div id="deposit-modal" class="modal hidden">
+    <div id="deposit-modal" class="modal">
         <div class="modal-content">
-            <h3>Пополнение баланса</h3>
-            <input type="number" id="deposit-amount" placeholder="Сумма">
+            <h3>Пополнить баланс</h3>
+            <input type="number" id="deposit-amount" placeholder="Введите сумму">
             <div class="modal-buttons">
                 <button id="confirm-deposit" class="btn">Подтвердить</button>
                 <button id="cancel-deposit" class="btn">Отмена</button>
@@ -102,10 +105,10 @@
         </div>
     </div>
 
-    <div id="withdraw-modal" class="modal hidden">
+    <div id="withdraw-modal" class="modal">
         <div class="modal-content">
-            <h3>Вывод средств</h3>
-            <input type="number" id="withdraw-amount" placeholder="Сумма">
+            <h3>Вывести средства</h3>
+            <input type="number" id="withdraw-amount" placeholder="Введите сумму">
             <div class="modal-buttons">
                 <button id="confirm-withdraw" class="btn">Подтвердить</button>
                 <button id="cancel-withdraw" class="btn">Отмена</button>

@@ -19,67 +19,56 @@ export const CONFIG = {
     },
 
     // Achievements configuration
-    ACHIEVEMENTS: [
-        {
-            id: 'first_win',
-            title: 'Первая победа',
-            description: 'Выиграть первую игру',
-            condition: (userData) => userData.totalWins >= 1,
+    ACHIEVEMENTS: {
+        welcome: {
+            title: 'Добро пожаловать',
+            description: 'Сделать первую ставку',
+            icon: '👋',
             reward: 1000
         },
-        {
-            id: 'five_wins',
-            title: 'Пять побед',
-            description: 'Выиграть 5 игр',
-            condition: (userData) => userData.totalWins >= 5,
+        first_win: {
+            title: 'Вкус победы',
+            description: 'Одержать первую победу',
+            icon: '🏆',
+            reward: 2000
+        },
+        skilled: {
+            title: 'Умелый',
+            description: 'Одержать 10 побед',
+            icon: '🎯',
             reward: 5000
         },
-        {
-            id: 'ten_wins',
-            title: 'Десять побед',
-            description: 'Выиграть 10 игр',
-            condition: (userData) => userData.totalWins >= 10,
+        gambler: {
+            title: 'Игроман',
+            description: 'Одержать 50 побед',
+            icon: '🎲',
             reward: 10000
         },
-        {
-            id: 'rich',
-            title: 'Богач',
-            description: 'Накопить 10000 рублей',
-            condition: (userData) => userData.balance >= 10000,
+        unlucky: {
+            title: 'Бывает',
+            description: 'Потерпеть 10 поражений',
+            icon: '😅',
+            reward: 2000
+        },
+        very_unlucky: {
+            title: 'Невезучий',
+            description: 'Потерпеть 30 поражений',
+            icon: '😢',
             reward: 5000
         },
-        {
-            id: 'millionaire',
-            title: 'Миллионер',
-            description: 'Накопить 50000 рублей',
-            condition: (userData) => userData.balance >= 50000,
-            reward: 10000
+        risky: {
+            title: 'Рисковый',
+            description: 'Сделать ставку 1000 рублей',
+            icon: '💎',
+            reward: 3000
         },
-        {
-            id: 'gambler',
-            title: 'Азартный игрок',
-            description: 'Сыграть 50 игр',
-            condition: (userData) => userData.totalGames >= 50,
-            reward: 5000
-        },
-        {
-            id: 'professional',
-            title: 'Профессионал',
-            description: 'Сыграть 100 игр',
-            condition: (userData) => userData.totalGames >= 100,
-            reward: 10000
-        },
-        {
-            id: 'lucky',
-            title: 'Везунчик',
-            description: 'Выиграть 3 раза подряд',
-            condition: (userData) => {
-                const history = userData.betHistory.slice(0, 3);
-                return history.length === 3 && history.every(bet => bet.won);
-            },
+        rich: {
+            title: 'Буратино',
+            description: 'Накопить 5000 рублей',
+            icon: '💰',
             reward: 5000
         }
-    ],
+    },
 
     // Default user data
     DEFAULT_USER_DATA: {
@@ -89,7 +78,7 @@ export const CONFIG = {
         totalWins: 0,
         totalLosses: 0,
         betHistory: [],
-        achievements: [],
+        achievements: {},
         lastBonusTime: 0,
         firstLoginTime: Date.now()
     }

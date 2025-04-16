@@ -1,58 +1,43 @@
 import { CONFIG } from './config.js';
 import { database } from './firebase.js';
 
-class User {
+export class User {
     constructor() {
-        this.tg = window.Telegram.WebApp;
-        this.userId = this.tg.initDataUnsafe?.user?.id;
-        this.userData = { ...CONFIG.DEFAULT_USER_DATA };
+        this.userData = {
+            balance: 0,
+            totalGames: 0,
+            wins: 0,
+            losses: 0,
+            achievements: {},
+            lastBonusTime: 0
+        };
+        
+        this.initUser();
     }
 
     async initUser() {
         try {
-            if (!this.userId) {
-                throw new Error('No user ID from Telegram');
+            const tg = window.Telegram.WebApp;
+            const tgUser = tg.initDataUnsafe?.user;
+            
+            if (tgUser) {
+                this.userId = tgUser.id.toString();
+                const userRef = database.ref(`users/${this.userId}`);
+                
+                userRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        this.userData = {
+                            ...this.userData,
+                            ...data,
+                            achievements: data.achievements || {}
+                        };
+                    }
+                    this.updateUI();
+                });
             }
-
-            // Set initial user data from Telegram
-            this.userData.name = this.tg.initDataUnsafe.user.first_name;
-            this.userData.photo_url = this.tg.initDataUnsafe.user.photo_url;
-
-            // Try to load existing user data
-            const userRef = database.ref(`users/${this.userId}`);
-            const snapshot = await userRef.once('value');
-            const savedData = snapshot.val();
-
-            if (savedData) {
-                // Merge saved data with default data
-                this.userData = {
-                    ...this.userData,
-                    ...savedData,
-                    name: this.tg.initDataUnsafe.user.first_name, // Always use current Telegram name
-                    photo_url: this.tg.initDataUnsafe.user.photo_url // Always use current Telegram photo
-                };
-            } else {
-                // Save initial user data
-                this.userData.firstLoginTime = Date.now();
-                await this.saveUserData();
-            }
-
-            this.updateUI();
-            return true;
         } catch (error) {
             console.error('Error initializing user:', error);
-            throw error;
-        }
-    }
-
-    async saveUserData() {
-        try {
-            const userRef = database.ref(`users/${this.userId}`);
-            await userRef.set(this.userData);
-            console.log('User data saved successfully');
-        } catch (error) {
-            console.error('Error saving user data:', error);
-            throw error;
         }
     }
 
@@ -61,9 +46,9 @@ class User {
         const userAvatar = document.getElementById('user-avatar');
         const userName = document.getElementById('user-name');
         const userBalance = document.getElementById('user-balance');
-
-        if (userAvatar) userAvatar.src = this.userData.photo_url;
-        if (userName) userName.textContent = this.userData.name;
+        
+        if (userAvatar) userAvatar.src = window.Telegram.WebApp.initDataUnsafe?.user?.photo_url || '';
+        if (userName) userName.textContent = window.Telegram.WebApp.initDataUnsafe?.user?.first_name || 'Игрок';
         if (userBalance) userBalance.textContent = `${this.userData.balance} ₽`;
 
         // Update profile page
@@ -75,13 +60,52 @@ class User {
         const totalLosses = document.getElementById('total-losses');
         const totalAchievements = document.getElementById('total-achievements');
 
-        if (profileAvatar) profileAvatar.src = this.userData.photo_url;
-        if (profileName) profileName.textContent = this.userData.name;
+        if (profileAvatar) profileAvatar.src = window.Telegram.WebApp.initDataUnsafe?.user?.photo_url || '';
+        if (profileName) profileName.textContent = window.Telegram.WebApp.initDataUnsafe?.user?.first_name || 'Игрок';
         if (profileBalance) profileBalance.textContent = `${this.userData.balance} ₽`;
         if (totalGames) totalGames.textContent = this.userData.totalGames;
-        if (totalWins) totalWins.textContent = this.userData.totalWins;
-        if (totalLosses) totalLosses.textContent = this.userData.totalLosses;
-        if (totalAchievements) totalAchievements.textContent = this.userData.achievements.length;
+        if (totalWins) totalWins.textContent = this.userData.wins;
+        if (totalLosses) totalLosses.textContent = this.userData.losses;
+        if (totalAchievements) {
+            const unlockedCount = Object.values(this.userData.achievements).filter(a => a.unlocked).length;
+            totalAchievements.textContent = `${unlockedCount}`;
+        }
+    }
+
+    async saveUserData() {
+        try {
+            const userRef = database.ref(`users/${this.userId}`);
+            await userRef.set(this.userData);
+        } catch (error) {
+            console.error('Error saving user data:', error);
+        }
+    }
+
+    addBalance(amount) {
+        this.userData.balance += amount;
+        this.saveUserData();
+    }
+
+    subtractBalance(amount) {
+        if (this.userData.balance >= amount) {
+            this.userData.balance -= amount;
+            this.saveUserData();
+            return true;
+        }
+        return false;
+    }
+
+    getBalance() {
+        return this.userData.balance;
+    }
+
+    updateAchievement(achievementId, unlocked) {
+        if (!this.userData.achievements[achievementId]) {
+            this.userData.achievements[achievementId] = { unlocked, timestamp: Date.now() };
+            this.saveUserData();
+            return true;
+        }
+        return false;
     }
 
     async updateBalance(amount) {
@@ -120,6 +144,4 @@ class User {
         }
         return false;
     }
-}
-
-export { User }; 
+} 

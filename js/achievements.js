@@ -1,88 +1,103 @@
 import { CONFIG } from './config.js';
 
-class Achievements {
+export class Achievements {
     constructor(user) {
         this.user = user;
         this.achievementsList = document.getElementById('achievements-list');
-        this.setupEventListeners();
+        this.initEventListeners();
     }
 
-    setupEventListeners() {
-        // Listen for user data updates
-        this.user.onDataUpdate = () => this.updateAchievements();
+    initEventListeners() {
+        document.getElementById('clear-history').addEventListener('click', () => {
+            this.user.userData.achievements = {};
+            this.user.saveUserData();
+            this.updateAchievementsDisplay();
+        });
     }
 
-    updateAchievements() {
+    updateAchievementsDisplay() {
+        if (!this.achievementsList) return;
+
         this.achievementsList.innerHTML = '';
-        
-        CONFIG.ACHIEVEMENTS.forEach(achievement => {
-            const isUnlocked = this.isAchievementUnlocked(achievement);
-            const achievementElement = this.createAchievementElement(achievement, isUnlocked);
+        Object.entries(CONFIG.ACHIEVEMENTS).forEach(([id, achievement]) => {
+            const unlocked = this.user.userData.achievements[id]?.unlocked || false;
+            const achievementElement = document.createElement('div');
+            achievementElement.className = `achievement ${unlocked ? 'unlocked' : 'locked'}`;
+            achievementElement.innerHTML = `
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-info">
+                    <h4>${achievement.title}</h4>
+                    <p>${achievement.description}</p>
+                    ${unlocked ? `<span class="reward">+${achievement.reward} ₽</span>` : ''}
+                </div>
+            `;
             this.achievementsList.appendChild(achievementElement);
         });
     }
 
-    isAchievementUnlocked(achievement) {
-        return this.user.userData.achievements.includes(achievement.id);
-    }
+    checkAchievements() {
+        const achievements = CONFIG.ACHIEVEMENTS;
+        let newAchievements = false;
 
-    createAchievementElement(achievement, isUnlocked) {
-        const element = document.createElement('div');
-        element.className = `achievement ${isUnlocked ? 'unlocked' : 'locked'}`;
-        
-        element.innerHTML = `
-            <div class="achievement-icon">${isUnlocked ? '🏆' : '🔒'}</div>
-            <div class="achievement-info">
-                <h4>${achievement.title}</h4>
-                <p>${achievement.description}</p>
-                ${isUnlocked ? `<span class="reward">Награда: ${achievement.reward} ₽</span>` : ''}
-            </div>
-        `;
+        // Check welcome achievement (first bet)
+        if (this.user.userData.totalGames > 0 && !this.user.userData.achievements.welcome?.unlocked) {
+            this.user.updateAchievement('welcome', true);
+            this.user.addBalance(achievements.welcome.reward);
+            newAchievements = true;
+        }
 
-        return element;
-    }
+        // Check first win achievement
+        if (this.user.userData.totalWins >= 1 && !this.user.userData.achievements.first_win?.unlocked) {
+            this.user.updateAchievement('first_win', true);
+            this.user.addBalance(achievements.first_win.reward);
+            newAchievements = true;
+        }
 
-    async checkAchievements() {
-        const unlockedAchievements = [];
-        
-        CONFIG.ACHIEVEMENTS.forEach(achievement => {
-            if (!this.user.userData.achievements.includes(achievement.id) && 
-                achievement.condition(this.user.userData)) {
-                unlockedAchievements.push(achievement);
-            }
-        });
+        // Check skilled achievement (10 wins)
+        if (this.user.userData.totalWins >= 10 && !this.user.userData.achievements.skilled?.unlocked) {
+            this.user.updateAchievement('skilled', true);
+            this.user.addBalance(achievements.skilled.reward);
+            newAchievements = true;
+        }
 
-        if (unlockedAchievements.length > 0) {
-            for (const achievement of unlockedAchievements) {
-                this.user.userData.achievements.push(achievement.id);
-                this.user.userData.balance += achievement.reward;
-            }
-            
-            await this.user.saveUserData();
-            this.updateAchievements();
-            this.showUnlockedAchievements(unlockedAchievements);
+        // Check gambler achievement (50 wins)
+        if (this.user.userData.totalWins >= 50 && !this.user.userData.achievements.gambler?.unlocked) {
+            this.user.updateAchievement('gambler', true);
+            this.user.addBalance(achievements.gambler.reward);
+            newAchievements = true;
+        }
+
+        // Check unlucky achievement (10 losses)
+        if (this.user.userData.totalLosses >= 10 && !this.user.userData.achievements.unlucky?.unlocked) {
+            this.user.updateAchievement('unlucky', true);
+            this.user.addBalance(achievements.unlucky.reward);
+            newAchievements = true;
+        }
+
+        // Check very unlucky achievement (30 losses)
+        if (this.user.userData.totalLosses >= 30 && !this.user.userData.achievements.very_unlucky?.unlocked) {
+            this.user.updateAchievement('very_unlucky', true);
+            this.user.addBalance(achievements.very_unlucky.reward);
+            newAchievements = true;
+        }
+
+        // Check risky achievement (1000 bet)
+        const hasBigBet = this.user.userData.betHistory.some(bet => bet.amount >= 1000);
+        if (hasBigBet && !this.user.userData.achievements.risky?.unlocked) {
+            this.user.updateAchievement('risky', true);
+            this.user.addBalance(achievements.risky.reward);
+            newAchievements = true;
+        }
+
+        // Check rich achievement (5000 balance)
+        if (this.user.userData.balance >= 5000 && !this.user.userData.achievements.rich?.unlocked) {
+            this.user.updateAchievement('rich', true);
+            this.user.addBalance(achievements.rich.reward);
+            newAchievements = true;
+        }
+
+        if (newAchievements) {
+            this.updateAchievementsDisplay();
         }
     }
-
-    showUnlockedAchievements(achievements) {
-        achievements.forEach(achievement => {
-            const notification = document.createElement('div');
-            notification.className = 'achievement-notification';
-            notification.innerHTML = `
-                <div class="achievement-notification-content">
-                    <span class="achievement-icon">🏆</span>
-                    <div class="achievement-notification-info">
-                        <h4>Новое достижение!</h4>
-                        <p>${achievement.title}</p>
-                        <p>Награда: ${achievement.reward} ₽</p>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 5000);
-        });
-    }
-}
-
-export { Achievements }; 
+} 

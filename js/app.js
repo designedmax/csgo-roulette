@@ -22,6 +22,73 @@ if (!tg) {
 console.log('Telegram init data:', tg.initDataUnsafe);
 console.log('Telegram user:', tg.initDataUnsafe?.user);
 
+class App {
+    constructor() {
+        this.user = new User();
+        this.roulette = new Roulette(this.user);
+        this.achievements = new Achievements(this.user);
+        this.history = new History(this.user);
+        
+        this.initEventListeners();
+    }
+
+    initEventListeners() {
+        // Navigation
+        document.getElementById('profile-btn').addEventListener('click', () => this.showPage('profile-page'));
+        document.getElementById('history-btn').addEventListener('click', () => this.showPage('history-page'));
+        document.getElementById('profile-back-btn').addEventListener('click', () => this.showPage('main-page'));
+        document.getElementById('history-back-btn').addEventListener('click', () => this.showPage('main-page'));
+
+        // Deposit/Withdraw
+        document.getElementById('deposit-btn').addEventListener('click', () => this.showModal('deposit-modal'));
+        document.getElementById('withdraw-btn').addEventListener('click', () => this.showModal('withdraw-modal'));
+        
+        document.getElementById('confirm-deposit').addEventListener('click', () => this.handleDeposit());
+        document.getElementById('confirm-withdraw').addEventListener('click', () => this.handleWithdraw());
+        
+        document.getElementById('cancel-deposit').addEventListener('click', () => this.hideModal('deposit-modal'));
+        document.getElementById('cancel-withdraw').addEventListener('click', () => this.hideModal('withdraw-modal'));
+    }
+
+    showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    showModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+    }
+
+    hideModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    handleDeposit() {
+        const amount = parseInt(document.getElementById('deposit-amount').value);
+        if (amount > 0) {
+            this.user.addBalance(amount);
+            this.hideModal('deposit-modal');
+            document.getElementById('deposit-amount').value = '';
+        }
+    }
+
+    handleWithdraw() {
+        const amount = parseInt(document.getElementById('withdraw-amount').value);
+        if (amount > 0 && amount <= this.user.getBalance()) {
+            this.user.subtractBalance(amount);
+            this.hideModal('withdraw-modal');
+            document.getElementById('withdraw-amount').value = '';
+        }
+    }
+}
+
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.app = new App();
+});
+
 // Initialize application
 async function initApp() {
     try {
@@ -106,47 +173,6 @@ async function initApp() {
         // Update timer every minute
         setInterval(updateBonusTimer, 60000);
         updateBonusTimer();
-
-        // Handle deposit/withdraw buttons
-        document.getElementById('deposit-btn').addEventListener('click', () => {
-            console.log('Deposit button clicked');
-            document.getElementById('deposit-modal').classList.remove('hidden');
-        });
-
-        document.getElementById('withdraw-btn').addEventListener('click', () => {
-            console.log('Withdraw button clicked');
-            document.getElementById('withdraw-modal').classList.remove('hidden');
-        });
-
-        // Handle modal buttons
-        document.getElementById('confirm-deposit').addEventListener('click', async () => {
-            const amount = parseInt(document.getElementById('deposit-amount').value);
-            console.log('Confirm deposit clicked:', amount);
-            if (amount > 0) {
-                await user.updateBalance(amount);
-                document.getElementById('deposit-modal').classList.add('hidden');
-            }
-        });
-
-        document.getElementById('confirm-withdraw').addEventListener('click', async () => {
-            const amount = parseInt(document.getElementById('withdraw-amount').value);
-            console.log('Confirm withdraw clicked:', amount);
-            if (amount > 0 && amount <= user.userData.balance) {
-                await user.updateBalance(-amount);
-                document.getElementById('withdraw-modal').classList.add('hidden');
-            }
-        });
-
-        // Close modals
-        document.getElementById('cancel-deposit').addEventListener('click', () => {
-            console.log('Cancel deposit clicked');
-            document.getElementById('deposit-modal').classList.add('hidden');
-        });
-
-        document.getElementById('cancel-withdraw').addEventListener('click', () => {
-            console.log('Cancel withdraw clicked');
-            document.getElementById('withdraw-modal').classList.add('hidden');
-        });
 
         console.log('Application initialized successfully');
     } catch (error) {
