@@ -10,6 +10,15 @@
     <!-- Load Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js"></script>
+
+    <!-- Load application scripts -->
+    <script type="module" src="/js/config.js"></script>
+    <script type="module" src="/js/firebase.js"></script>
+    <script type="module" src="/js/user.js"></script>
+    <script type="module" src="/js/roulette.js"></script>
+    <script type="module" src="/js/achievements.js"></script>
+    <script type="module" src="/js/history.js"></script>
+    <script type="module" src="/js/app.js"></script>
 </head>
 <body>
     <div class="container">
@@ -114,8 +123,16 @@
     <script type="module">
         // Initialize Telegram WebApp
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        console.log('Telegram WebApp:', tg);
+        
+        if (!tg) {
+            console.error('Telegram WebApp not found');
+            alert('Ошибка: Telegram WebApp не найден');
+        } else {
+            tg.ready();
+            tg.expand();
+            console.log('Telegram WebApp initialized');
+        }
 
         // Log Telegram data
         console.log('Telegram init data:', tg.initDataUnsafe);
@@ -131,6 +148,8 @@
         // Initialize application
         async function initApp() {
             try {
+                console.log('Starting application initialization...');
+                
                 // Initialize user first
                 const user = new User();
                 await user.initUser();
@@ -231,12 +250,15 @@
                 console.log('Application initialized successfully');
             } catch (error) {
                 console.error('Error initializing application:', error);
-                alert('Произошла ошибка при инициализации приложения. Пожалуйста, перезагрузите страницу.');
+                alert('Произошла ошибка при инициализации приложения: ' + error.message);
             }
         }
 
         // Start application
-        initApp();
+        initApp().catch(error => {
+            console.error('Fatal error during initialization:', error);
+            alert('Критическая ошибка: ' + error.message);
+        });
     </script>
 </body>
 </html> 

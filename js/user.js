@@ -6,26 +6,34 @@ class User {
         this.userId = null;
         this.userData = null;
         this.DATA_VERSION = 1;
+        console.log('User class initialized');
     }
 
     async initUser() {
         try {
+            console.log('Starting user initialization...');
+            
             // Initialize Telegram WebApp
             const tg = window.Telegram.WebApp;
+            if (!tg) {
+                throw new Error('Telegram WebApp not found');
+            }
+            console.log('Telegram WebApp found');
+            
             tg.ready();
             tg.expand();
+            console.log('Telegram WebApp initialized');
 
             // Get user data from Telegram
             const user = tg.initDataUnsafe.user;
             console.log('Telegram user data:', user);
 
             if (!user || !user.id) {
-                console.error('No user data from Telegram');
-                return;
+                throw new Error('No user data from Telegram');
             }
 
             this.userId = user.id;
-            console.log('Initializing user with ID:', this.userId);
+            console.log('User ID:', this.userId);
 
             // Initialize fresh user data structure
             this.userData = {
@@ -48,9 +56,11 @@ class User {
                 lastBonusTime: 0,
                 dataVersion: this.DATA_VERSION
             };
+            console.log('Initial user data created:', this.userData);
 
             // Try to load existing data from Firebase
             try {
+                console.log('Attempting to load data from Firebase...');
                 const snapshot = await database.ref(`users/${this.userId}`).once('value');
                 console.log('Firebase snapshot:', snapshot.val());
                 
@@ -70,6 +80,7 @@ class User {
                         achievements: data.achievements || this.userData.achievements,
                         betHistory: data.betHistory || this.userData.betHistory
                     };
+                    console.log('Updated user data:', this.userData);
                 } else {
                     console.log('No existing data found, creating new user');
                     await this.saveUserData();
@@ -80,18 +91,21 @@ class User {
             }
 
             this.updateUI();
+            console.log('User initialization completed successfully');
         } catch (error) {
             console.error('Error in initUser:', error);
+            throw error;
         }
     }
 
     async saveUserData() {
         try {
             if (!this.userId) {
-                console.error('Cannot save data: no user ID');
-                return;
+                throw new Error('Cannot save data: no user ID');
             }
 
+            console.log('Saving user data...');
+            
             // Calculate total achievements
             this.userData.totalAchievements = this.userData.achievements.filter(a => a.unlocked).length;
             
@@ -123,6 +137,7 @@ class User {
             console.log('Verification - Data in Firebase:', snapshot.val());
         } catch (error) {
             console.error('Error saving user data:', error);
+            throw error;
         }
     }
 
