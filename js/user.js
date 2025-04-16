@@ -1,5 +1,5 @@
 import { CONFIG } from './config.js';
-import { database, ref, set, onValue } from './firebase.js';
+import { database } from './firebase.js';
 
 class User {
     constructor() {
@@ -37,11 +37,11 @@ class User {
             this.userData.name = this.tg.initDataUnsafe.user.first_name || 'Гость';
             
             // Try to load existing user data from Firebase
-            const userRef = ref(database, `users/${this.userId}`);
+            const userRef = database.ref(`users/${this.userId}`);
             console.log('Attempting to load data from Firebase path:', `users/${this.userId}`);
             
             return new Promise((resolve, reject) => {
-                onValue(userRef, (snapshot) => {
+                userRef.on('value', (snapshot) => {
                     console.log('Firebase snapshot:', snapshot.val());
                     const savedData = snapshot.val();
 
@@ -77,9 +77,9 @@ class User {
 
     async saveUserData() {
         try {
-            const userRef = ref(database, `users/${this.userId}`);
+            const userRef = database.ref(`users/${this.userId}`);
             console.log('Saving user data to Firebase:', this.userData);
-            await set(userRef, this.userData);
+            await userRef.set(this.userData);
             console.log('User data saved successfully');
         } catch (error) {
             console.error('Error saving user data:', error);

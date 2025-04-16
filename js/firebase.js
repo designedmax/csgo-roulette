@@ -1,6 +1,4 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
-import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js';
-
+// Firebase initialization
 const firebaseConfig = {
     apiKey: "AIzaSyDZuLclwcWqOiLEl542NmkdG_MwTQV-kWo",
     authDomain: "cs-roll.firebaseapp.com",
@@ -17,15 +15,15 @@ let app;
 let database;
 
 try {
-    app = initializeApp(firebaseConfig);
+    app = firebase.initializeApp(firebaseConfig);
     console.log('Firebase app initialized:', app);
     
-    database = getDatabase(app);
+    database = firebase.database();
     console.log('Firebase database initialized:', database);
     
     // Test connection
-    const connectedRef = ref(database, '.info/connected');
-    onValue(connectedRef, (snap) => {
+    const connectedRef = database.ref('.info/connected');
+    connectedRef.on('value', (snap) => {
         if (snap.val() === false) {
             console.error('Firebase connection failed');
         } else {
@@ -37,4 +35,4 @@ try {
     throw error;
 }
 
-export { database, ref, set, onValue }; 
+export { database }; 
