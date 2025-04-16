@@ -1,6 +1,7 @@
 class Achievements {
     constructor(user) {
         this.user = user;
+        this.achievementsList = document.getElementById('achievements-list');
         this.initEventListeners();
         this.initializeAchievements();
         this.updateAchievementsDisplay();
@@ -10,59 +11,15 @@ class Achievements {
         // No specific event listeners needed for achievements
     }
 
-    initializeAchievements() {
-        // Get current achievements
-        const currentAchievements = this.user.userData.achievements;
-        
-        // Check all achievements through history
-        const betHistory = this.user.userData.betHistory || [];
-        const totalGames = this.user.userData.totalGames || 0;
-        const totalWins = this.user.userData.totalWins || 0;
-        const totalLosses = totalGames - totalWins;
-        const balance = this.user.userData.balance || 0;
+    async initializeAchievements() {
+        // Get achievements from user data in Firebase
+        this.user.userData.achievements = CONFIG.ACHIEVEMENTS.map(achievement => ({
+            ...achievement,
+            unlocked: this.user.userData.achievements?.find(a => a.id === achievement.id)?.unlocked || false
+        }));
 
-        // Update achievements based on current state
-        this.user.userData.achievements = currentAchievements.map(achievement => {
-            const updatedAchievement = { ...achievement };
-            
-            switch(achievement.id) {
-                case 'new_player':
-                    updatedAchievement.unlocked = true;
-                    break;
-                case 'first_win':
-                    updatedAchievement.unlocked = totalWins > 0;
-                    break;
-                case 'lucky':
-                    updatedAchievement.unlocked = totalWins >= 10;
-                    break;
-                case 'pro':
-                    updatedAchievement.unlocked = totalWins >= 50;
-                    break;
-                case 'sheep':
-                    updatedAchievement.unlocked = totalLosses >= 10;
-                    break;
-                case 'loser':
-                    updatedAchievement.unlocked = totalLosses >= 30;
-                    break;
-                case 'rich':
-                    updatedAchievement.unlocked = balance >= 5000;
-                    break;
-                case 'risky':
-                    updatedAchievement.unlocked = betHistory.some(bet => bet.amount >= 1000);
-                    break;
-            }
-            
-            return updatedAchievement;
-        });
-
-        // Save achievements state
-        this.user.saveUserData();
-        
-        // Update display
-        this.updateAchievementsDisplay();
-        
-        // Update total achievements count in profile
-        this.updateTotalAchievementsCount();
+        // Save updated achievements to Firebase
+        await this.user.saveUserData();
     }
 
     updateTotalAchievementsCount() {
@@ -74,101 +31,85 @@ class Achievements {
     }
 
     updateAchievementsDisplay() {
-        const achievementsList = document.getElementById('achievements-list');
-        if (!achievementsList) return;
-        
-        achievementsList.innerHTML = '';
-        
-        this.user.userData.achievements.forEach(achievement => {
-            const achievementElement = document.createElement('div');
-            achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+        if (!this.achievementsList) return;
+
+        this.achievementsList.innerHTML = '';
+        const achievements = this.user.userData.achievements;
+
+        achievements.forEach(achievement => {
+            const achievementItem = document.createElement('div');
+            achievementItem.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
             
-            const emoji = this.getAchievementEmoji(achievement.id);
-            
-            achievementElement.innerHTML = `
-                <span class="achievement-emoji">${emoji}</span>
+            achievementItem.innerHTML = `
+                <div class="achievement-emoji">${achievement.emoji}</div>
                 <div class="achievement-info">
-                    <h4 class="achievement-name">${achievement.name}</h4>
-                    <p class="achievement-description">${achievement.description}</p>
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-description">${achievement.description}</div>
                 </div>
             `;
             
-            achievementsList.appendChild(achievementElement);
+            this.achievementsList.appendChild(achievementItem);
         });
 
         // Update total achievements count
         this.updateTotalAchievementsCount();
     }
 
-    getAchievementEmoji(achievementId) {
-        const emojiMap = {
-            'new_player': '👋',
-            'first_win': '🏆',
-            'lucky': '🍀',
-            'pro': '👑',
-            'sheep': '🐑',
-            'loser': '😢',
-            'big_bet': '💰',
-            'rich': '💎'
-        };
-        return emojiMap[achievementId] || '🎯';
-    }
-
-    checkAndUnlockAchievements() {
+    async checkAndUnlockAchievements() {
         const achievements = this.user.userData.achievements;
-        let updated = false;
+        let unlockedNew = false;
 
-        // New player achievement (unlocked by default)
-        if (!achievements.find(a => a.id === 'new_player').unlocked) {
-            achievements.find(a => a.id === 'new_player').unlocked = true;
-            updated = true;
+        // Check each achievement
+        for (const achievement of achievements) {
+            if (!achievement.unlocked) {
+                let shouldUnlock = false;
+
+                switch (achievement.id) {
+                    case 'new_player':
+                        shouldUnlock = true;
+                        break;
+                    case 'first_win':
+                        shouldUnlock = this.user.userData.totalWins > 0;
+                        break;
+                    case 'five_wins':
+                        shouldUnlock = this.user.userData.totalWins >= 5;
+                        break;
+                    case 'ten_wins':
+                        shouldUnlock = this.user.userData.totalWins >= 10;
+                        break;
+                    case 'twenty_wins':
+                        shouldUnlock = this.user.userData.totalWins >= 20;
+                        break;
+                    case 'fifty_wins':
+                        shouldUnlock = this.user.userData.totalWins >= 50;
+                        break;
+                    case 'hundred_wins':
+                        shouldUnlock = this.user.userData.totalWins >= 100;
+                        break;
+                    case 'five_hundred_wins':
+                        shouldUnlock = this.user.userData.totalWins >= 500;
+                        break;
+                    case 'thousand_wins':
+                        shouldUnlock = this.user.userData.totalWins >= 1000;
+                        break;
+                    case 'five_thousand_wins':
+                        shouldUnlock = this.user.userData.totalWins >= 5000;
+                        break;
+                    case 'ten_thousand_wins':
+                        shouldUnlock = this.user.userData.totalWins >= 10000;
+                        break;
+                }
+
+                if (shouldUnlock) {
+                    achievement.unlocked = true;
+                    unlockedNew = true;
+                }
+            }
         }
 
-        // First win achievement
-        if (this.user.userData.totalWins > 0 && !achievements.find(a => a.id === 'first_win').unlocked) {
-            achievements.find(a => a.id === 'first_win').unlocked = true;
-            updated = true;
-        }
-
-        // Lucky achievement (10 wins)
-        if (this.user.userData.totalWins >= 10 && !achievements.find(a => a.id === 'lucky').unlocked) {
-            achievements.find(a => a.id === 'lucky').unlocked = true;
-            updated = true;
-        }
-
-        // Pro achievement (50 wins)
-        if (this.user.userData.totalWins >= 50 && !achievements.find(a => a.id === 'pro').unlocked) {
-            achievements.find(a => a.id === 'pro').unlocked = true;
-            updated = true;
-        }
-
-        // Sheep achievement (10 losses)
-        const totalLosses = this.user.userData.totalGames - this.user.userData.totalWins;
-        if (totalLosses >= 10 && !achievements.find(a => a.id === 'sheep').unlocked) {
-            achievements.find(a => a.id === 'sheep').unlocked = true;
-            updated = true;
-        }
-
-        // Loser achievement (30 losses)
-        if (totalLosses >= 30 && !achievements.find(a => a.id === 'loser').unlocked) {
-            achievements.find(a => a.id === 'loser').unlocked = true;
-            updated = true;
-        }
-
-        // Rich achievement
-        if (this.user.userData.balance >= 5000 && !achievements.find(a => a.id === 'rich').unlocked) {
-            achievements.find(a => a.id === 'rich').unlocked = true;
-            updated = true;
-        }
-
-        // Risky achievement (at least one bet of 1000 or more)
-        if (this.user.userData.betHistory && this.user.userData.betHistory.some(bet => bet.amount >= 1000) && !achievements.find(a => a.id === 'risky').unlocked) {
-            achievements.find(a => a.id === 'risky').unlocked = true;
-            updated = true;
-        }
-
-        if (updated) {
-            this.user.saveUserData();
+        if (unlockedNew) {
+            // Save updated achievements to Firebase
+            await this.user.saveUserData();
             this.updateAchievementsDisplay();
         }
     }

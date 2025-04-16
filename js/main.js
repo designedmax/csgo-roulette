@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Initialize Telegram WebApp
     const tg = window.Telegram.WebApp;
     tg.ready();
@@ -6,11 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize user
     const user = new User();
+    await user.initUser();
 
     // Initialize game components
     const roulette = new Roulette(user);
     const achievements = new Achievements(user);
     const history = new History(user);
+
+    // Initialize achievements
+    await achievements.initializeAchievements();
+    achievements.updateAchievementsDisplay();
 
     // Initialize daily bonus timer
     updateBonusTimer();
@@ -27,9 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Set up daily bonus button
-    document.getElementById('daily-bonus-btn').addEventListener('click', () => {
-        if (user.canGetDailyBonus()) {
-            if (user.getDailyBonus()) {
+    document.getElementById('daily-bonus-btn').addEventListener('click', async () => {
+        if (await user.canGetDailyBonus()) {
+            if (await user.getDailyBonus()) {
                 alert('Вы получили ежедневный бонус в размере 5000 ₽!');
                 updateBonusTimer();
             }
@@ -49,10 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
         depositAmount.value = '';
     });
 
-    confirmDeposit.addEventListener('click', () => {
+    confirmDeposit.addEventListener('click', async () => {
         const amount = parseInt(depositAmount.value);
         if (amount && amount > 0) {
-            user.updateBalance(amount);
+            await user.updateBalance(amount);
             depositModal.classList.add('hidden');
             alert(`Баланс пополнен на ${amount} ₽`);
         } else {
@@ -75,11 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
         withdrawAmount.value = '';
     });
 
-    confirmWithdraw.addEventListener('click', () => {
+    confirmWithdraw.addEventListener('click', async () => {
         const amount = parseInt(withdrawAmount.value);
         if (amount && amount > 0) {
             if (amount <= user.userData.balance) {
-                user.updateBalance(-amount);
+                await user.updateBalance(-amount);
                 withdrawModal.classList.add('hidden');
                 alert(`Выведено ${amount} ₽`);
             } else {
@@ -114,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateBonusTimer, 60000);
 
     // Unlock new player achievement
-    achievements.checkAndUnlockAchievements();
+    await achievements.checkAndUnlockAchievements();
 
     // Check Firebase connection
     database.ref('.info/connected').on('value', (snapshot) => {
