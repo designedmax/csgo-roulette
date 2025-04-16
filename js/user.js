@@ -9,7 +9,8 @@ export class User {
             wins: 0,
             losses: 0,
             achievements: {},
-            lastBonusTime: 0
+            lastBonusTime: 0,
+            betHistory: []
         };
         
         this.initUser();
@@ -30,7 +31,8 @@ export class User {
                         this.userData = {
                             ...this.userData,
                             ...data,
-                            achievements: data.achievements || {}
+                            achievements: data.achievements || {},
+                            betHistory: data.betHistory || []
                         };
                     }
                     this.updateUI();
@@ -59,6 +61,7 @@ export class User {
         const totalWins = document.getElementById('total-wins');
         const totalLosses = document.getElementById('total-losses');
         const totalAchievements = document.getElementById('total-achievements');
+        const historyList = document.getElementById('history-list');
 
         if (profileAvatar) profileAvatar.src = window.Telegram.WebApp.initDataUnsafe?.user?.photo_url || '';
         if (profileName) profileName.textContent = window.Telegram.WebApp.initDataUnsafe?.user?.first_name || 'Игрок';
@@ -69,6 +72,21 @@ export class User {
         if (totalAchievements) {
             const unlockedCount = Object.values(this.userData.achievements).filter(a => a.unlocked).length;
             totalAchievements.textContent = `${unlockedCount}`;
+        }
+
+        // Update history list
+        if (historyList) {
+            historyList.innerHTML = '';
+            this.userData.betHistory.forEach(bet => {
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${bet.won ? 'win' : 'lose'}`;
+                historyItem.innerHTML = `
+                    <span class="history-time">${new Date(bet.timestamp).toLocaleString()}</span>
+                    <span class="history-amount">${bet.amount} ₽</span>
+                    <span class="history-result">${bet.won ? 'Выигрыш' : 'Проигрыш'}</span>
+                `;
+                historyList.appendChild(historyItem);
+            });
         }
     }
 
@@ -115,7 +133,11 @@ export class User {
     }
 
     async addBetToHistory(bet) {
-        this.userData.betHistory.unshift(bet);
+        this.userData.betHistory.unshift({
+            amount: bet.amount,
+            won: bet.won,
+            timestamp: Date.now()
+        });
         if (this.userData.betHistory.length > 50) {
             this.userData.betHistory.pop();
         }
