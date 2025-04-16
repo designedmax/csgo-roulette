@@ -51,9 +51,10 @@ class Achievements {
             }
         });
 
+        // Save achievements state
         this.user.saveUserData();
         
-        // Immediately update the display
+        // Update display
         this.updateAchievementsDisplay();
         
         // Update total achievements count in profile
@@ -62,6 +63,10 @@ class Achievements {
         if (totalAchievementsElement) {
             totalAchievementsElement.textContent = totalAchievements;
         }
+
+        // Log current state for debugging
+        console.log('Achievements state:', this.user.userData.achievements);
+        console.log('Total unlocked:', totalAchievements);
     }
 
     updateAchievementsDisplay() {
@@ -86,6 +91,13 @@ class Achievements {
             
             achievementsList.appendChild(achievementElement);
         });
+
+        // Update total achievements count again after display update
+        const totalAchievements = this.user.userData.achievements.filter(a => a.unlocked).length;
+        const totalAchievementsElement = document.getElementById('total-achievements');
+        if (totalAchievementsElement) {
+            totalAchievementsElement.textContent = totalAchievements;
+        }
     }
 
     getAchievementEmoji(achievementId) {
