@@ -1,4 +1,5 @@
 import { database } from './firebase.js';
+import { CONFIG } from './config.js';
 
 class User {
     constructor() {
@@ -191,4 +192,6 @@ class User {
         }
         return false;
     }
-} 
+}
+
+export { User }; 
