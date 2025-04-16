@@ -11,6 +11,9 @@ class Achievements {
     }
 
     initializeAchievements() {
+        // Force update achievements with new data
+        this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
+        this.user.saveUserData();
         // Initialize achievements if they don't exist
         if (!this.user.userData.achievements || this.user.userData.achievements.length === 0) {
             this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
