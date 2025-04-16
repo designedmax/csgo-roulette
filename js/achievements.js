@@ -11,21 +11,8 @@ class Achievements {
     }
 
     initializeAchievements() {
-        // Get stored achievements
-        const storedAchievements = this.user.getStoredAchievements();
-        
-        // Initialize with new data
-        this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
-        
-        // Restore unlocked status from stored achievements
-        if (storedAchievements) {
-            storedAchievements.forEach(stored => {
-                const achievement = this.user.userData.achievements.find(a => a.id === stored.id);
-                if (achievement) {
-                    achievement.unlocked = stored.unlocked;
-                }
-            });
-        }
+        // Get current achievements
+        const currentAchievements = this.user.userData.achievements;
         
         // Check all achievements through history
         const betHistory = this.user.userData.betHistory || [];
@@ -34,34 +21,38 @@ class Achievements {
         const totalLosses = totalGames - totalWins;
         const balance = this.user.userData.balance || 0;
 
-        // Check each achievement
-        this.user.userData.achievements.forEach(achievement => {
+        // Update achievements based on current state
+        this.user.userData.achievements = currentAchievements.map(achievement => {
+            const updatedAchievement = { ...achievement };
+            
             switch(achievement.id) {
                 case 'new_player':
-                    achievement.unlocked = true;
+                    updatedAchievement.unlocked = true;
                     break;
                 case 'first_win':
-                    achievement.unlocked = totalWins > 0;
+                    updatedAchievement.unlocked = totalWins > 0;
                     break;
                 case 'lucky':
-                    achievement.unlocked = totalWins >= 10;
+                    updatedAchievement.unlocked = totalWins >= 10;
                     break;
                 case 'pro':
-                    achievement.unlocked = totalWins >= 50;
+                    updatedAchievement.unlocked = totalWins >= 50;
                     break;
                 case 'sheep':
-                    achievement.unlocked = totalLosses >= 10;
+                    updatedAchievement.unlocked = totalLosses >= 10;
                     break;
                 case 'loser':
-                    achievement.unlocked = totalLosses >= 30;
+                    updatedAchievement.unlocked = totalLosses >= 30;
                     break;
                 case 'rich':
-                    achievement.unlocked = balance >= 5000;
+                    updatedAchievement.unlocked = balance >= 5000;
                     break;
                 case 'risky':
-                    achievement.unlocked = betHistory.some(bet => bet.amount >= 1000);
+                    updatedAchievement.unlocked = betHistory.some(bet => bet.amount >= 1000);
                     break;
             }
+            
+            return updatedAchievement;
         });
 
         // Save achievements state

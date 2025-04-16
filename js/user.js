@@ -44,7 +44,17 @@ class User {
     getStoredAchievements() {
         const stored = localStorage.getItem('achievements');
         if (stored) {
-            return JSON.parse(stored);
+            const parsed = JSON.parse(stored);
+            // Ensure all achievements from CONFIG exist
+            CONFIG.ACHIEVEMENTS.forEach(configAchievement => {
+                if (!parsed.find(a => a.id === configAchievement.id)) {
+                    parsed.push({
+                        ...configAchievement,
+                        unlocked: false
+                    });
+                }
+            });
+            return parsed;
         }
         return JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
     }
