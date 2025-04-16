@@ -109,12 +109,27 @@
         </div>
     </div>
 
-    <script src="js/config.js" type="module"></script>
-    <script src="js/firebase.js" type="module"></script>
-    <script src="js/user.js" type="module"></script>
-    <script src="js/roulette.js" type="module"></script>
-    <script src="js/achievements.js" type="module"></script>
-    <script src="js/history.js" type="module"></script>
-    <script src="js/main.js" type="module"></script>
+    <script type="module">
+        import { CONFIG } from './js/config.js';
+        import { User } from './js/user.js';
+        import { Roulette } from './js/roulette.js';
+        import { Achievements } from './js/achievements.js';
+        import { History } from './js/history.js';
+
+        window.addEventListener('load', async () => {
+            try {
+                const user = new User();
+                await user.initUser();
+                
+                const roulette = new Roulette(user);
+                const achievements = new Achievements(user);
+                const history = new History(user);
+                
+                console.log('Application initialized successfully');
+            } catch (error) {
+                console.error('Error initializing application:', error);
+            }
+        });
+    </script>
 </body>
 </html> 

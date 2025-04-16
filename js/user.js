@@ -8,36 +8,46 @@ class User {
     }
 
     async initUser() {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        
-        this.userId = tg.initDataUnsafe.user?.id;
-        
-        // Initialize user data structure
-        this.userData = {
-            id: this.userId,
-            firstName: tg.initDataUnsafe.user?.first_name || 'Игрок',
-            lastName: tg.initDataUnsafe.user?.last_name || '',
-            username: tg.initDataUnsafe.user?.username || '',
-            photoUrl: tg.initDataUnsafe.user?.photo_url || 'img/default-avatar.png',
-            balance: 0,
-            registrationDate: new Date().toISOString(),
-            totalGames: 0,
-            totalWins: 0,
-            totalLosses: 0,
-            totalAchievements: 0,
-            achievements: CONFIG.ACHIEVEMENTS.map(achievement => ({
-                ...achievement,
-                unlocked: false
-            })),
-            betHistory: [],
-            lastBonusTime: 0,
-            dataVersion: this.DATA_VERSION
-        };
-
-        // Try to load user data from Firebase
         try {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            
+            this.userId = tg.initDataUnsafe.user?.id;
+            console.log('Initializing user with ID:', this.userId);
+            
+            if (!this.userId) {
+                console.error('No user ID found in Telegram WebApp data');
+                return;
+            }
+
+            // Initialize user data structure
+            this.userData = {
+                id: this.userId,
+                firstName: tg.initDataUnsafe.user?.first_name || 'Игрок',
+                lastName: tg.initDataUnsafe.user?.last_name || '',
+                username: tg.initDataUnsafe.user?.username || '',
+                photoUrl: tg.initDataUnsafe.user?.photo_url || 'img/default-avatar.png',
+                balance: 0,
+                registrationDate: new Date().toISOString(),
+                totalGames: 0,
+                totalWins: 0,
+                totalLosses: 0,
+                totalAchievements: 0,
+                achievements: CONFIG.ACHIEVEMENTS.map(achievement => ({
+                    ...achievement,
+                    unlocked: false
+                })),
+                betHistory: [],
+                lastBonusTime: 0,
+                dataVersion: this.DATA_VERSION
+            };
+
+            console.log('Initial user data:', this.userData);
+
+            // Try to load user data from Firebase
             const snapshot = await database.ref(`users/${this.userId}`).once('value');
+            console.log('Firebase snapshot:', snapshot.val());
+
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 console.log('Loaded data from Firebase:', data);
@@ -59,21 +69,27 @@ class User {
                         photoUrl: data.photoUrl || this.userData.photoUrl,
                         achievements: data.achievements || this.userData.achievements
                     };
+                    console.log('Updated user data:', this.userData);
                 }
             } else {
                 console.log('No data in Firebase, creating new user');
                 // Save initial user data to Firebase
                 await this.saveUserData();
             }
-        } catch (error) {
-            console.error('Error loading user data:', error);
-        }
 
-        this.updateUI();
+            this.updateUI();
+        } catch (error) {
+            console.error('Error in initUser:', error);
+        }
     }
 
     async saveUserData() {
         try {
+            if (!this.userId) {
+                console.error('Cannot save data: no user ID');
+                return;
+            }
+
             // Calculate total achievements
             this.userData.totalAchievements = this.userData.achievements.filter(a => a.unlocked).length;
             
@@ -96,8 +112,9 @@ class User {
                 dataVersion: this.DATA_VERSION
             };
 
+            console.log('Saving to Firebase:', userDataForFirebase);
             await database.ref(`users/${this.userId}`).set(userDataForFirebase);
-            console.log('User data saved to Firebase:', userDataForFirebase);
+            console.log('User data saved successfully');
         } catch (error) {
             console.error('Error saving user data:', error);
         }

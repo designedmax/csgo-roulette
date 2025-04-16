@@ -1,6 +1,6 @@
 // Firebase configuration
 const firebaseConfig = {
-    databaseURL: "https://cs-roll-default-rtdb.firebaseio.com"
+    databaseURL: "https://cs-roll-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
 // Initialize Firebase
