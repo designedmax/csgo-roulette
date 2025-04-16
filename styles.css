@@ -51,32 +51,9 @@ body {
 }
 
 .balance {
-    font-size: 1.5em;
-    margin: 15px 0;
+    font-size: 1.2em;
+    margin: 10px 0;
     color: var(--achievement-unlocked);
-    background-color: var(--secondary-color);
-    padding: 15px 25px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    display: inline-block;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.balance:hover {
-    transform: scale(1.02);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-}
-
-.balance span {
-    font-weight: 600;
-    color: var(--text-color);
-    margin-right: 5px;
-}
-
-.balance .amount {
-    color: var(--achievement-unlocked);
-    font-weight: 700;
 }
 
 .btn {
