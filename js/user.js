@@ -2,7 +2,8 @@ import { database } from './firebase.js';
 
 class User {
     constructor() {
-        this.initUser();
+        this.userId = null;
+        this.userData = null;
     }
 
     async initUser() {
@@ -79,6 +80,7 @@ class User {
             };
 
             await database.ref(`users/${this.userId}`).set(userDataForFirebase);
+            console.log('User data saved to Firebase:', userDataForFirebase);
         } catch (error) {
             console.error('Error saving user data:', error);
         }

@@ -1,4 +1,20 @@
+import { database } from './firebase.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize Firebase
+    try {
+        const connectedRef = database.ref('.info/connected');
+        connectedRef.on('value', (snap) => {
+            if (snap.val() === false) {
+                console.error('Firebase connection failed');
+            } else {
+                console.log('Firebase connected successfully');
+            }
+        });
+    } catch (error) {
+        console.error('Firebase initialization error:', error);
+    }
+
     // Initialize Telegram WebApp
     const tg = window.Telegram.WebApp;
     tg.ready();
@@ -121,27 +137,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Unlock new player achievement
     await achievements.checkAndUnlockAchievements();
 
-    // Check Firebase connection
-    database.ref('.info/connected').on('value', (snapshot) => {
-        if (snapshot.val() === false) {
-            console.error('Firebase connection failed');
+    // View all users data
+    try {
+        const snapshot = await database.ref('users').once('value');
+        const data = snapshot.val();
+        console.log('Users data:', data);
+        
+        if (!data) {
+            console.log('No data found in database');
         } else {
-            console.log('Firebase connected successfully');
-            
-            // View all users data
-            database.ref('users').once('value', (snapshot) => {
-                const data = snapshot.val();
-                console.log('Users data:', data);
-                
-                if (!data) {
-                    console.log('No data found in database');
-                } else {
-                    console.log('Found users:', Object.keys(data).length);
-                    Object.entries(data).forEach(([userId, userData]) => {
-                        console.log(`User ${userId}:`, userData);
-                    });
-                }
+            console.log('Found users:', Object.keys(data).length);
+            Object.entries(data).forEach(([userId, userData]) => {
+                console.log(`User ${userId}:`, userData);
             });
         }
-    });
+    } catch (error) {
+        console.error('Error fetching users data:', error);
+    }
 }); 
