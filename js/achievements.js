@@ -127,4 +127,19 @@ class Achievements {
             this.updateAchievementsDisplay();
         }
     }
+
+    unlockAchievement(achievementId) {
+        const achievement = this.user.userData.achievements.find(a => a.id === achievementId);
+        if (achievement && !achievement.unlocked) {
+            achievement.unlocked = true;
+            this.user.saveUserData();
+            this.updateAchievementsDisplay();
+            
+            // Immediately update the achievements count in profile
+            const totalAchievements = this.user.userData.achievements.filter(a => a.unlocked).length;
+            document.getElementById('total-achievements').textContent = totalAchievements;
+            
+            this.showAchievementNotification(achievement);
+        }
+    }
 } 
