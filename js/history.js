@@ -28,23 +28,12 @@ class History {
                 const historyItem = document.createElement('div');
                 historyItem.className = `bet-history-item ${bet.win ? 'win' : 'lose'}`;
                 
-                const date = new Date(bet.timestamp);
-                const formattedDate = date.toLocaleString('ru-RU', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
                 if (bet.win) {
                     historyItem.innerHTML = `
-                        <span>${formattedDate}</span>
                         <span>Выигрыш: ${bet.skin} (${bet.amount} ₽)</span>
                     `;
                 } else {
                     historyItem.innerHTML = `
-                        <span>${formattedDate}</span>
                         <span>Проигрыш: ${Math.abs(bet.amount)} ₽</span>
                     `;
                 }
