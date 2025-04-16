@@ -98,6 +98,10 @@ class User {
         document.getElementById('total-games').textContent = this.userData.totalGames;
         document.getElementById('total-wins').textContent = this.userData.totalWins;
         
+        // Update total achievements count
+        const totalAchievements = this.userData.achievements.filter(a => a.unlocked).length;
+        document.getElementById('total-achievements').textContent = totalAchievements;
+        
         // Force update achievements display
         const achievements = new Achievements(this);
         achievements.initializeAchievements();
