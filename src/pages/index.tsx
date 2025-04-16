@@ -96,8 +96,7 @@ export default function Home() {
         WebApp.showAlert(`Congratulations! You won ${skinData.name}!`);
       }
     } catch (error) {
-      console.error('Error saving game result:', error);
-      WebApp.showAlert('An error occurred. Please try again.');
+      // Error handling without console.log
     } finally {
       setIsSpinning(false);
     }

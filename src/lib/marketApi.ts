@@ -21,8 +21,7 @@ export async function getAvailableSkins(maxPrice: number = 100): Promise<Skin[]>
     
     throw new Error('Failed to fetch skins');
   } catch (error) {
-    console.error('Error fetching skins:', error);
-    return [];
+    throw error;
   }
 }
 
@@ -33,8 +32,7 @@ export async function reserveSkin(skinId: string): Promise<boolean> {
     
     return data.success;
   } catch (error) {
-    console.error('Error reserving skin:', error);
-    return false;
+    throw error;
   }
 }
 
