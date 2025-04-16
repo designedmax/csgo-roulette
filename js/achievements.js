@@ -13,7 +13,19 @@ class Achievements {
     initializeAchievements() {
         // Get stored achievements
         const storedAchievements = this.user.getStoredAchievements();
-        this.user.userData.achievements = storedAchievements;
+        
+        // Initialize with new data
+        this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
+        
+        // Restore unlocked status from stored achievements
+        if (storedAchievements) {
+            storedAchievements.forEach(stored => {
+                const achievement = this.user.userData.achievements.find(a => a.id === stored.id);
+                if (achievement) {
+                    achievement.unlocked = stored.unlocked;
+                }
+            });
+        }
         
         // Check all achievements through history
         const betHistory = this.user.userData.betHistory || [];
@@ -59,15 +71,15 @@ class Achievements {
         this.updateAchievementsDisplay();
         
         // Update total achievements count in profile
+        this.updateTotalAchievementsCount();
+    }
+
+    updateTotalAchievementsCount() {
         const totalAchievements = this.user.userData.achievements.filter(a => a.unlocked).length;
         const totalAchievementsElement = document.getElementById('total-achievements');
         if (totalAchievementsElement) {
             totalAchievementsElement.textContent = totalAchievements;
         }
-
-        // Log current state for debugging
-        console.log('Achievements state:', this.user.userData.achievements);
-        console.log('Total unlocked:', totalAchievements);
     }
 
     updateAchievementsDisplay() {
@@ -93,12 +105,8 @@ class Achievements {
             achievementsList.appendChild(achievementElement);
         });
 
-        // Update total achievements count again after display update
-        const totalAchievements = this.user.userData.achievements.filter(a => a.unlocked).length;
-        const totalAchievementsElement = document.getElementById('total-achievements');
-        if (totalAchievementsElement) {
-            totalAchievementsElement.textContent = totalAchievements;
-        }
+        // Update total achievements count
+        this.updateTotalAchievementsCount();
     }
 
     getAchievementEmoji(achievementId) {
