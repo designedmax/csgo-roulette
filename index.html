@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS:GO Skin Roulette</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Load Telegram WebApp SDK first -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Load Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
@@ -116,11 +118,21 @@
         import { Achievements } from './js/achievements.js';
         import { History } from './js/history.js';
 
+        // Initialize Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        // Log Telegram data
+        console.log('Telegram init data:', tg.initDataUnsafe);
+
         window.addEventListener('load', async () => {
             try {
+                // Initialize user first
                 const user = new User();
                 await user.initUser();
                 
+                // Initialize other components
                 const roulette = new Roulette(user);
                 const achievements = new Achievements(user);
                 const history = new History(user);
@@ -128,6 +140,7 @@
                 console.log('Application initialized successfully');
             } catch (error) {
                 console.error('Error initializing application:', error);
+                alert('Произошла ошибка при инициализации приложения. Пожалуйста, перезагрузите страницу.');
             }
         });
     </script>

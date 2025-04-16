@@ -9,34 +9,30 @@ class User {
 
     async initUser() {
         try {
+            // Initialize Telegram WebApp
             const tg = window.Telegram.WebApp;
             tg.ready();
-            
-            this.userId = tg.initDataUnsafe.user?.id;
-            console.log('Initializing user with ID:', this.userId);
-            
-            if (!this.userId) {
-                console.error('No user ID found in Telegram WebApp data');
+            tg.expand();
+
+            // Get user data from Telegram
+            const user = tg.initDataUnsafe.user;
+            console.log('Telegram user data:', user);
+
+            if (!user || !user.id) {
+                console.error('No user data from Telegram');
                 return;
             }
 
-            // Test Firebase connection
-            try {
-                const testRef = database.ref('test');
-                await testRef.set({ test: Date.now() });
-                console.log('Firebase connection test successful');
-            } catch (error) {
-                console.error('Firebase connection test failed:', error);
-                return;
-            }
+            this.userId = user.id;
+            console.log('Initializing user with ID:', this.userId);
 
             // Initialize fresh user data structure
             this.userData = {
                 id: this.userId,
-                firstName: tg.initDataUnsafe.user?.first_name || 'Игрок',
-                lastName: tg.initDataUnsafe.user?.last_name || '',
-                username: tg.initDataUnsafe.user?.username || '',
-                photoUrl: tg.initDataUnsafe.user?.photo_url || 'img/default-avatar.png',
+                firstName: user.first_name || 'Игрок',
+                lastName: user.last_name || '',
+                username: user.username || '',
+                photoUrl: user.photo_url || 'img/default-avatar.png',
                 balance: 0,
                 registrationDate: new Date().toISOString(),
                 totalGames: 0,
@@ -73,14 +69,12 @@ class User {
                         achievements: data.achievements || this.userData.achievements,
                         betHistory: data.betHistory || this.userData.betHistory
                     };
-                    console.log('Updated user data:', this.userData);
                 } else {
                     console.log('No existing data found, creating new user');
                     await this.saveUserData();
                 }
             } catch (error) {
                 console.error('Error loading data from Firebase:', error);
-                // Continue with default data
                 await this.saveUserData();
             }
 
@@ -154,18 +148,32 @@ class User {
     }
 
     updateUI() {
-        // Update user info
-        document.getElementById('user-name').textContent = this.userData.firstName;
-        document.getElementById('user-balance').textContent = this.userData.balance;
-        document.getElementById('user-avatar').src = this.userData.photoUrl;
+        try {
+            // Update user info
+            const userName = document.getElementById('user-name');
+            const userBalance = document.getElementById('user-balance');
+            const userAvatar = document.getElementById('user-avatar');
+            const profileName = document.getElementById('profile-name');
+            const profileAvatar = document.getElementById('profile-avatar');
+            const registrationDate = document.getElementById('registration-date');
+            const totalGames = document.getElementById('total-games');
+            const totalWins = document.getElementById('total-wins');
+            const totalAchievements = document.getElementById('total-achievements');
 
-        // Update profile page
-        document.getElementById('profile-name').textContent = this.userData.firstName;
-        document.getElementById('profile-avatar').src = this.userData.photoUrl;
-        document.getElementById('registration-date').textContent = new Date(this.userData.registrationDate).toLocaleDateString();
-        document.getElementById('total-games').textContent = this.userData.totalGames;
-        document.getElementById('total-wins').textContent = this.userData.totalWins;
-        document.getElementById('total-achievements').textContent = this.userData.totalAchievements;
+            if (userName) userName.textContent = this.userData.firstName;
+            if (userBalance) userBalance.textContent = this.userData.balance;
+            if (userAvatar) userAvatar.src = this.userData.photoUrl;
+            if (profileName) profileName.textContent = this.userData.firstName;
+            if (profileAvatar) profileAvatar.src = this.userData.photoUrl;
+            if (registrationDate) registrationDate.textContent = new Date(this.userData.registrationDate).toLocaleDateString();
+            if (totalGames) totalGames.textContent = this.userData.totalGames;
+            if (totalWins) totalWins.textContent = this.userData.totalWins;
+            if (totalAchievements) totalAchievements.textContent = this.userData.totalAchievements;
+
+            console.log('UI updated with data:', this.userData);
+        } catch (error) {
+            console.error('Error updating UI:', error);
+        }
     }
 
     async canGetDailyBonus() {
