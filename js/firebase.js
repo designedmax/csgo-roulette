@@ -13,10 +13,28 @@ const firebaseConfig = {
 
 console.log('Initializing Firebase with config:', firebaseConfig);
 
-const app = initializeApp(firebaseConfig);
-console.log('Firebase app initialized:', app);
+let app;
+let database;
 
-const database = getDatabase(app);
-console.log('Firebase database initialized:', database);
+try {
+    app = initializeApp(firebaseConfig);
+    console.log('Firebase app initialized:', app);
+    
+    database = getDatabase(app);
+    console.log('Firebase database initialized:', database);
+    
+    // Test connection
+    const connectedRef = ref(database, '.info/connected');
+    onValue(connectedRef, (snap) => {
+        if (snap.val() === false) {
+            console.error('Firebase connection failed');
+        } else {
+            console.log('Firebase connected successfully');
+        }
+    });
+} catch (error) {
+    console.error('Error initializing Firebase:', error);
+    throw error;
+}
 
 export { database, ref, set, onValue }; 

@@ -42,18 +42,21 @@ async function initApp() {
 
         // Initialize event listeners
         document.getElementById('profile-btn').addEventListener('click', () => {
+            console.log('Profile button clicked');
             document.getElementById('main-page').classList.remove('active');
             document.getElementById('profile-page').classList.add('active');
             user.updateUI();
         });
 
         document.getElementById('history-btn').addEventListener('click', () => {
+            console.log('History button clicked');
             document.getElementById('main-page').classList.remove('active');
             document.getElementById('history-page').classList.add('active');
         });
 
         document.querySelectorAll('#back-btn').forEach(button => {
             button.addEventListener('click', () => {
+                console.log('Back button clicked');
                 document.querySelectorAll('.page').forEach(page => {
                     page.classList.remove('active');
                 });
@@ -65,6 +68,7 @@ async function initApp() {
         document.querySelectorAll('.bet-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const amount = parseInt(button.dataset.amount);
+                console.log('Bet button clicked:', amount);
                 roulette.handleBet(amount);
             });
         });
@@ -74,6 +78,7 @@ async function initApp() {
         const bonusTimer = document.getElementById('bonus-timer');
         
         dailyBonusBtn.addEventListener('click', async () => {
+            console.log('Daily bonus button clicked');
             if (await user.canGetDailyBonus()) {
                 await user.getDailyBonus();
                 alert('Бонус получен!');
@@ -104,16 +109,19 @@ async function initApp() {
 
         // Handle deposit/withdraw buttons
         document.getElementById('deposit-btn').addEventListener('click', () => {
+            console.log('Deposit button clicked');
             document.getElementById('deposit-modal').classList.remove('hidden');
         });
 
         document.getElementById('withdraw-btn').addEventListener('click', () => {
+            console.log('Withdraw button clicked');
             document.getElementById('withdraw-modal').classList.remove('hidden');
         });
 
         // Handle modal buttons
         document.getElementById('confirm-deposit').addEventListener('click', async () => {
             const amount = parseInt(document.getElementById('deposit-amount').value);
+            console.log('Confirm deposit clicked:', amount);
             if (amount > 0) {
                 await user.updateBalance(amount);
                 document.getElementById('deposit-modal').classList.add('hidden');
@@ -122,6 +130,7 @@ async function initApp() {
 
         document.getElementById('confirm-withdraw').addEventListener('click', async () => {
             const amount = parseInt(document.getElementById('withdraw-amount').value);
+            console.log('Confirm withdraw clicked:', amount);
             if (amount > 0 && amount <= user.userData.balance) {
                 await user.updateBalance(-amount);
                 document.getElementById('withdraw-modal').classList.add('hidden');
@@ -130,10 +139,12 @@ async function initApp() {
 
         // Close modals
         document.getElementById('cancel-deposit').addEventListener('click', () => {
+            console.log('Cancel deposit clicked');
             document.getElementById('deposit-modal').classList.add('hidden');
         });
 
         document.getElementById('cancel-withdraw').addEventListener('click', () => {
+            console.log('Cancel withdraw clicked');
             document.getElementById('withdraw-modal').classList.add('hidden');
         });
 

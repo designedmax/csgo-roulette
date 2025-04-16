@@ -88,6 +88,8 @@ class User {
     }
 
     updateUI() {
+        console.log('Updating UI with user data:', this.userData);
+        
         // Update main page
         const userAvatar = document.getElementById('user-avatar');
         const userName = document.getElementById('user-name');
@@ -116,12 +118,14 @@ class User {
     }
 
     async updateBalance(amount) {
+        console.log('Updating balance by:', amount);
         this.userData.balance += amount;
         await this.saveUserData();
         this.updateUI();
     }
 
     async addBetToHistory(bet) {
+        console.log('Adding bet to history:', bet);
         this.userData.betHistory.unshift(bet);
         if (this.userData.betHistory.length > 50) {
             this.userData.betHistory.pop();
@@ -130,6 +134,7 @@ class User {
     }
 
     async clearBetHistory() {
+        console.log('Clearing bet history');
         this.userData.betHistory = [];
         await this.saveUserData();
     }
@@ -143,6 +148,7 @@ class User {
 
     async getDailyBonus() {
         if (await this.canGetDailyBonus()) {
+            console.log('Giving daily bonus');
             this.userData.balance += 5000;
             this.userData.lastBonusTime = Date.now();
             await this.saveUserData();

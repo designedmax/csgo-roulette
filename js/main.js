@@ -1,4 +1,9 @@
 import { database } from './firebase.js';
+import { User } from './user.js';
+import { Roulette } from './roulette.js';
+import { Achievements } from './achievements.js';
+import { History } from './history.js';
+import { CONFIG } from './config.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize Firebase
