@@ -1,19 +1,6 @@
 import { database } from './firebase.js';
 
-// Function to clear all user data
-async function clearAllUserData() {
-    try {
-        await database.ref('users').remove();
-        console.log('All user data cleared from Firebase');
-    } catch (error) {
-        console.error('Error clearing user data:', error);
-    }
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
-    // Clear all user data on startup
-    await clearAllUserData();
-
     // Initialize Firebase
     try {
         const connectedRef = database.ref('.info/connected');

@@ -10,23 +10,27 @@
 <body>
     <div class="container">
         <div id="main-page" class="page active">
-            <div class="header">
-                <h1>Telegram Roulette</h1>
-            </div>
             <div class="user-info">
                 <img id="user-avatar" src="" alt="Аватар">
-                <h2 id="user-name"></h2>
-                <div class="balance">Баланс: <span id="user-balance">0</span> ₽</div>
+                <div class="user-details">
+                    <h2 id="user-name"></h2>
+                    <div class="balance">Баланс: <span id="user-balance">0</span> ₽</div>
+                    <div class="user-actions">
+                        <button id="deposit-btn" class="btn">Пополнить</button>
+                        <button id="withdraw-btn" class="btn">Вывести</button>
+                        <button id="profile-btn" class="btn">Профиль</button>
+                    </div>
+                </div>
             </div>
             <div class="roulette-container">
                 <div id="roulette-result" class="hidden">
                     <p id="result-text"></p>
                 </div>
                 <div class="bet-buttons">
-                    <button class="bet-btn" data-amount="10">10 ₽</button>
-                    <button class="bet-btn" data-amount="50">50 ₽</button>
                     <button class="bet-btn" data-amount="100">100 ₽</button>
+                    <button class="bet-btn" data-amount="300">300 ₽</button>
                     <button class="bet-btn" data-amount="500">500 ₽</button>
+                    <button class="bet-btn" data-amount="1000">1000 ₽</button>
                 </div>
             </div>
             <div class="daily-bonus">
@@ -34,16 +38,11 @@
                 <button id="daily-bonus-btn" class="btn">Получить 5000 ₽</button>
                 <div id="bonus-timer"></div>
             </div>
-            <div class="navigation">
-                <button id="profile-btn" class="nav-btn">Профиль</button>
-                <button id="history-btn" class="nav-btn">История</button>
-            </div>
         </div>
 
         <div id="profile-page" class="page">
             <div class="header">
-                <h1>Профиль</h1>
-                <button id="back-btn" class="nav-btn">Назад</button>
+                <button id="back-btn" class="btn">Назад</button>
             </div>
             <div class="profile-info">
                 <img id="profile-avatar" src="" alt="Аватар">
@@ -62,11 +61,34 @@
 
         <div id="history-page" class="page">
             <div class="header">
-                <h1>История ставок</h1>
-                <button id="back-btn" class="nav-btn">Назад</button>
+                <button id="back-btn" class="btn">Назад</button>
             </div>
             <div id="bets-history"></div>
             <button id="clear-history" class="btn">Очистить историю</button>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="deposit-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Пополнение баланса</h3>
+            <input type="number" id="deposit-amount" placeholder="Сумма пополнения">
+            <div class="modal-buttons">
+                <button id="confirm-deposit" class="btn">Подтвердить</button>
+                <button id="cancel-deposit" class="btn">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdraw-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Вывод средств</h3>
+            <input type="number" id="withdraw-amount" placeholder="Сумма вывода">
+            <div class="modal-buttons">
+                <button id="confirm-withdraw" class="btn">Подтвердить</button>
+                <button id="cancel-withdraw" class="btn">Отмена</button>
+            </div>
         </div>
     </div>
 

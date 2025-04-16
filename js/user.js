@@ -1,5 +1,5 @@
 import { CONFIG } from './config.js';
-import { database, ref, set, get } from './firebase.js';
+import { database, ref, set, onValue } from './firebase.js';
 
 class User {
     constructor() {
@@ -33,33 +33,42 @@ class User {
                 throw new Error('No user data from Telegram');
             }
 
+            // Update user data with Telegram info
+            this.userData.name = this.tg.initDataUnsafe.user.first_name || 'Гость';
+            
             // Try to load existing user data from Firebase
             const userRef = ref(database, `users/${this.userId}`);
             console.log('Attempting to load data from Firebase path:', `users/${this.userId}`);
             
-            const snapshot = await get(userRef);
-            console.log('Firebase snapshot:', snapshot.val());
-            
-            const savedData = snapshot.val();
+            return new Promise((resolve, reject) => {
+                onValue(userRef, (snapshot) => {
+                    console.log('Firebase snapshot:', snapshot.val());
+                    const savedData = snapshot.val();
 
-            if (savedData) {
-                console.log('Loaded saved user data:', savedData);
-                this.userData = {
-                    ...this.userData,
-                    ...savedData,
-                    achievements: CONFIG.ACHIEVEMENTS.map(achievement => ({
-                        ...achievement,
-                        unlocked: savedData.achievements?.find(a => a.id === achievement.id)?.unlocked || false
-                    }))
-                };
-            } else {
-                console.log('No saved data found, using default values');
-                // Save initial user data to Firebase
-                await this.saveUserData();
-            }
+                    if (savedData) {
+                        console.log('Loaded saved user data:', savedData);
+                        this.userData = {
+                            ...this.userData,
+                            ...savedData,
+                            name: this.tg.initDataUnsafe.user.first_name || 'Гость', // Keep Telegram name
+                            achievements: CONFIG.ACHIEVEMENTS.map(achievement => ({
+                                ...achievement,
+                                unlocked: savedData.achievements?.find(a => a.id === achievement.id)?.unlocked || false
+                            }))
+                        };
+                    } else {
+                        console.log('No saved data found, using default values');
+                        // Save initial user data to Firebase
+                        this.saveUserData();
+                    }
 
-            this.updateUI();
-            return true;
+                    this.updateUI();
+                    resolve(true);
+                }, (error) => {
+                    console.error('Error reading from Firebase:', error);
+                    reject(error);
+                });
+            });
         } catch (error) {
             console.error('Error initializing user:', error);
             throw error;
