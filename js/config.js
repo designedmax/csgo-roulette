@@ -14,52 +14,62 @@ const CONFIG = {
     ],
     ACHIEVEMENTS: [
         {
-            id: 'new_player',
-            name: 'Салага',
-            description: 'Добро пожаловать',
+            id: "new_player",
+            name: "Салага",
+            description: "Добро пожаловать",
+            emoji: "👋",
             unlocked: false
         },
         {
-            id: 'first_win',
-            name: 'Вкус победы',
-            description: 'Первая победа',
+            id: "first_win",
+            name: "Вкус победы",
+            description: "Выиграть первую игру",
+            emoji: "🎉",
             unlocked: false
         },
         {
-            id: 'lucky',
-            name: 'Умелый',
-            description: '10 побед',
+            id: "rich",
+            name: "Богач",
+            description: "Накопить 10000 рублей",
+            emoji: "💰",
             unlocked: false
         },
         {
-            id: 'pro',
-            name: 'Игроман',
-            description: '50 побед',
+            id: "gambler",
+            name: "Азартный игрок",
+            description: "Сыграть 100 игр",
+            emoji: "🎲",
             unlocked: false
         },
         {
-            id: 'sheep',
-            name: 'Бывает',
-            description: '10 поражений',
+            id: "lucky",
+            name: "Везунчик",
+            description: "Выиграть 3 раза подряд",
+            emoji: "🍀",
             unlocked: false
         },
         {
-            id: 'loser',
-            name: 'Невезучий',
-            description: '30 поражений',
+            id: "big_win",
+            name: "Крупный выигрыш",
+            description: "Выиграть 5000 рублей за одну игру",
+            emoji: "💎",
             unlocked: false
         },
         {
-            id: 'big_bet',
-            name: 'Рисковый',
-            description: 'Ставка за 1К',
+            id: "veteran",
+            name: "Ветеран",
+            description: "Сыграть 500 игр",
+            emoji: "🏆",
             unlocked: false
         },
         {
-            id: 'rich',
-            name: 'Буратино',
-            description: 'На балансе 5К',
+            id: "millionaire",
+            name: "Миллионер",
+            description: "Накопить 100000 рублей",
+            emoji: "💵",
             unlocked: false
         }
     ]
-}; 
+};
+
+export { CONFIG }; 

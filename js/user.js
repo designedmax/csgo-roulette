@@ -1,4 +1,3 @@
-import { database } from './firebase.js';
 import { CONFIG } from './config.js';
 
 class User {
@@ -6,6 +5,7 @@ class User {
         this.userId = null;
         this.userData = null;
         this.DATA_VERSION = 1;
+        this.database = window.database;
         console.log('User class initialized');
     }
 
@@ -61,7 +61,7 @@ class User {
             // Try to load existing data from Firebase
             try {
                 console.log('Attempting to load data from Firebase...');
-                const snapshot = await database.ref(`users/${this.userId}`).once('value');
+                const snapshot = await this.database.ref(`users/${this.userId}`).once('value');
                 console.log('Firebase snapshot:', snapshot.val());
                 
                 if (snapshot.exists()) {
@@ -129,11 +129,11 @@ class User {
             };
 
             console.log('Saving to Firebase:', userDataForFirebase);
-            await database.ref(`users/${this.userId}`).set(userDataForFirebase);
+            await this.database.ref(`users/${this.userId}`).set(userDataForFirebase);
             console.log('User data saved successfully');
 
             // Verify the save
-            const snapshot = await database.ref(`users/${this.userId}`).once('value');
+            const snapshot = await this.database.ref(`users/${this.userId}`).once('value');
             console.log('Verification - Data in Firebase:', snapshot.val());
         } catch (error) {
             console.error('Error saving user data:', error);
