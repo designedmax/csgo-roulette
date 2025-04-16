@@ -1,51 +1,41 @@
 class History {
     constructor(user) {
         this.user = user;
+        this.historyContainer = document.getElementById('bets-history');
         this.initEventListeners();
         this.updateHistoryDisplay();
     }
 
     initEventListeners() {
         document.getElementById('clear-history').addEventListener('click', async () => {
-            if (confirm('Вы уверены, что хотите очистить историю ставок?')) {
-                await this.user.clearBetHistory();
-                this.updateHistoryDisplay();
-            }
+            await this.user.clearBetHistory();
+            this.updateHistoryDisplay();
         });
     }
 
     updateHistoryDisplay() {
-        const historyContainer = document.getElementById('bets-history');
-        if (!historyContainer) return; // Если контейнер не найден, выходим
-        
-        historyContainer.innerHTML = '';
+        if (!this.historyContainer) return;
 
-        // Используем текущую историю из userData
-        const betHistory = this.user.userData.betHistory || [];
-        
-        if (betHistory.length > 0) {
-            betHistory.forEach(bet => {
-                const historyItem = document.createElement('div');
-                historyItem.className = `bet-history-item ${bet.win ? 'win' : 'lose'}`;
-                
-                if (bet.win) {
-                    historyItem.innerHTML = `
-                        <span>Выигрыш: ${bet.skin} (${bet.amount} ₽)</span>
-                    `;
-                } else {
-                    historyItem.innerHTML = `
-                        <span>Проигрыш: ${Math.abs(bet.amount)} ₽</span>
-                    `;
-                }
+        this.historyContainer.innerHTML = '';
+        const history = this.user.userData.betHistory || [];
 
-                historyContainer.appendChild(historyItem);
-            });
-        } else {
-            const emptyMessage = document.createElement('div');
-            emptyMessage.className = 'empty-history';
-            emptyMessage.textContent = 'История ставок пуста';
-            historyContainer.appendChild(emptyMessage);
+        if (history.length === 0) {
+            this.historyContainer.innerHTML = '<p>История ставок пуста</p>';
+            return;
         }
+
+        history.forEach(bet => {
+            const betElement = document.createElement('div');
+            betElement.className = `bet-item ${bet.result}`;
+            
+            betElement.innerHTML = `
+                <div class="bet-amount">${bet.amount} ₽</div>
+                <div class="bet-result">${bet.result === 'win' ? 'Выигрыш' : 'Проигрыш'}</div>
+                <div class="bet-win-amount">${bet.result === 'win' ? `+${bet.winAmount} ₽` : ''}</div>
+            `;
+            
+            this.historyContainer.appendChild(betElement);
+        });
     }
 
     addBetToHistory(bet) {
@@ -59,4 +49,6 @@ class History {
         this.user.saveUserData();
         this.updateHistoryDisplay();
     }
-} 
+}
+
+export { History }; 

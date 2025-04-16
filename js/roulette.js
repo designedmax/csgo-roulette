@@ -1,123 +1,77 @@
+import { CONFIG } from './config.js';
+
 class Roulette {
     constructor(user) {
         this.user = user;
+        this.resultElement = document.getElementById('roulette-result');
+        this.resultText = document.getElementById('result-text');
         this.initEventListeners();
     }
 
     initEventListeners() {
         document.querySelectorAll('.bet-btn').forEach(button => {
-            button.addEventListener('click', () => this.handleBet(parseInt(button.dataset.amount)));
+            button.addEventListener('click', () => {
+                const amount = parseInt(button.dataset.amount);
+                this.handleBet(amount);
+            });
         });
     }
 
     async handleBet(amount) {
-        if (this.user.userData.balance < amount) {
+        if (amount > this.user.userData.balance) {
             alert('Недостаточно средств!');
             return;
         }
 
-        // Deduct bet amount immediately
+        // Deduct bet amount
         this.user.userData.balance -= amount;
         await this.user.saveUserData();
         this.user.updateUI();
 
-        // Disable bet buttons during animation
-        this.toggleBetButtons(false);
+        // Show loading state
+        this.resultElement.classList.remove('hidden');
+        this.resultText.textContent = 'Крутим...';
 
-        // Start animation
-        this.startAnimation();
-
-        // Process bet after animation
+        // Simulate delay
         setTimeout(async () => {
-            const result = await this.processBet(amount);
-            this.showResult(result);
-            this.toggleBetButtons(true);
-        }, 1000);
-    }
-
-    toggleBetButtons(enable) {
-        document.querySelectorAll('.bet-btn').forEach(button => {
-            button.disabled = !enable;
-        });
-    }
-
-    startAnimation() {
-        const resultElement = document.getElementById('roulette-result');
-        const animationElement = document.getElementById('result-animation');
-        
-        resultElement.classList.remove('hidden');
-        animationElement.innerHTML = '🎰';
-        
-        // Smoother spinning animation
-        let spins = 0;
-        const totalSpins = 8;
-        const spinInterval = setInterval(() => {
-            spins++;
-            animationElement.innerHTML = this.getRandomEmoji();
-            
-            if (spins >= totalSpins) {
-                clearInterval(spinInterval);
-            }
-        }, 125);
-    }
-
-    getRandomEmoji() {
-        const emojis = ['🎮', '🔫', '💎', '💰', '🎲', '🎯'];
-        return emojis[Math.floor(Math.random() * emojis.length)];
+            await this.processBet(amount);
+        }, 2000);
     }
 
     async processBet(amount) {
-        this.user.userData.totalGames++;
-        
-        const isWin = Math.random() < CONFIG.WIN_CHANCE;
-        let result;
+        const win = Math.random() < 0.4; // 40% chance to win
+        const result = win ? 'win' : 'lose';
+        const winAmount = win ? amount * 2 : 0;
 
-        if (isWin) {
-            const skin = CONFIG.SKINS[Math.floor(Math.random() * CONFIG.SKINS.length)];
-            const winAmount = skin.value;
-            this.user.userData.balance += winAmount;
+        // Update user data
+        this.user.userData.totalGames++;
+        if (win) {
             this.user.userData.totalWins++;
-            result = {
-                win: true,
-                amount: winAmount,
-                skin: skin.name,
-                betAmount: amount
-            };
+            this.user.userData.balance += winAmount;
         } else {
-            result = {
-                win: false,
-                amount: -amount,
-                betAmount: amount
-            };
+            this.user.userData.totalLosses++;
         }
 
         // Add to history
-        const history = new History(this.user);
         await this.user.addBetToHistory({
-            ...result,
+            amount,
+            result,
+            winAmount,
             timestamp: new Date().toISOString()
         });
 
-        // Save updated user data
+        // Save updated data
         await this.user.saveUserData();
         this.user.updateUI();
 
-        return result;
+        // Show result
+        this.showResult(result, amount, winAmount);
     }
 
-    showResult(result) {
-        const resultElement = document.getElementById('roulette-result');
-        const resultText = document.getElementById('result-text');
-        
-        if (result.win) {
-            resultText.innerHTML = `
-                <div class="win">Поздравляем! Вы выиграли ${result.skin} (${result.amount} ₽)</div>
-            `;
-        } else {
-            resultText.innerHTML = `
-                <div class="lose">К сожалению, вы проиграли ${Math.abs(result.amount)} ₽</div>
-            `;
-        }
+    showResult(result, amount, winAmount) {
+        this.resultText.innerHTML = result === 'win' 
+            ? `Поздравляем! Вы выиграли ${winAmount} ₽`
+            : `К сожалению, вы проиграли ${amount} ₽`;
     }
 
     checkAchievements(result) {
@@ -150,7 +104,7 @@ class Roulette {
         }
 
         // Big bet achievement
-        if (result.amount >= 1000 && !achievements.find(a => a.id === 'big_bet').unlocked) {
+        if (amount >= 1000 && !achievements.find(a => a.id === 'big_bet').unlocked) {
             achievements.find(a => a.id === 'big_bet').unlocked = true;
         }
 
@@ -161,4 +115,6 @@ class Roulette {
 
         this.user.saveUserData();
     }
-} 
+}
+
+export { Roulette }; 
