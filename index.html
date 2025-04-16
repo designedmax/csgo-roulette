@@ -112,12 +112,6 @@
     </div>
 
     <script type="module">
-        import { CONFIG } from './js/config.js';
-        import { User } from './js/user.js';
-        import { Roulette } from './js/roulette.js';
-        import { Achievements } from './js/achievements.js';
-        import { History } from './js/history.js';
-
         // Initialize Telegram WebApp
         const tg = window.Telegram.WebApp;
         tg.ready();
@@ -125,8 +119,16 @@
 
         // Log Telegram data
         console.log('Telegram init data:', tg.initDataUnsafe);
+        console.log('Telegram user:', tg.initDataUnsafe.user);
 
-        window.addEventListener('load', async () => {
+        import { CONFIG } from './js/config.js';
+        import { User } from './js/user.js';
+        import { Roulette } from './js/roulette.js';
+        import { Achievements } from './js/achievements.js';
+        import { History } from './js/history.js';
+
+        // Initialize application
+        async function initApp() {
             try {
                 // Initialize user first
                 const user = new User();
@@ -136,13 +138,36 @@
                 const roulette = new Roulette(user);
                 const achievements = new Achievements(user);
                 const history = new History(user);
+
+                // Initialize event listeners
+                document.getElementById('profile-btn').addEventListener('click', () => {
+                    document.getElementById('main-page').classList.add('hidden');
+                    document.getElementById('profile-page').classList.remove('hidden');
+                });
+
+                document.getElementById('back-btn').addEventListener('click', () => {
+                    document.getElementById('profile-page').classList.add('hidden');
+                    document.getElementById('main-page').classList.remove('hidden');
+                });
+
+                document.getElementById('daily-bonus-btn').addEventListener('click', async () => {
+                    if (await user.canGetDailyBonus()) {
+                        await user.getDailyBonus();
+                        alert('Бонус получен!');
+                    } else {
+                        alert('Бонус уже получен сегодня. Приходите завтра!');
+                    }
+                });
                 
                 console.log('Application initialized successfully');
             } catch (error) {
                 console.error('Error initializing application:', error);
                 alert('Произошла ошибка при инициализации приложения. Пожалуйста, перезагрузите страницу.');
             }
-        });
+        }
+
+        // Start application
+        initApp();
     </script>
 </body>
 </html> 
