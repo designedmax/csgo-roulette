@@ -1,5 +1,5 @@
 import { CONFIG } from './config.js';
-import { database } from './firebase.js';
+import { database, ref, set, get } from './firebase.js';
 
 class User {
     constructor() {
@@ -19,7 +19,6 @@ class User {
             totalAchievements: 0,
             lastBonusTime: 0
         };
-        this.database = database;
     }
 
     async initUser() {
@@ -32,7 +31,8 @@ class User {
             }
 
             // Try to load existing user data from Firebase
-            const snapshot = await this.database.ref(`users/${this.userId}`).once('value');
+            const userRef = ref(database, `users/${this.userId}`);
+            const snapshot = await get(userRef);
             const savedData = snapshot.val();
 
             if (savedData) {
@@ -61,7 +61,8 @@ class User {
 
     async saveUserData() {
         try {
-            await this.database.ref(`users/${this.userId}`).set(this.userData);
+            const userRef = ref(database, `users/${this.userId}`);
+            await set(userRef, this.userData);
             console.log('User data saved successfully');
         } catch (error) {
             console.error('Error saving user data:', error);
