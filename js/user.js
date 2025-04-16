@@ -9,10 +9,10 @@ class User {
         
         this.userData = {
             id: tg.initDataUnsafe.user?.id,
-            firstName: tg.initDataUnsafe.user?.first_name,
-            lastName: tg.initDataUnsafe.user?.last_name,
-            username: tg.initDataUnsafe.user?.username,
-            photoUrl: tg.initDataUnsafe.user?.photo_url,
+            firstName: tg.initDataUnsafe.user?.first_name || 'Игрок',
+            lastName: tg.initDataUnsafe.user?.last_name || '',
+            username: tg.initDataUnsafe.user?.username || '',
+            photoUrl: tg.initDataUnsafe.user?.photo_url || 'img/default-avatar.png',
             balance: this.getStoredBalance(),
             registrationDate: this.getStoredRegistrationDate(),
             totalGames: this.getStoredTotalGames(),
