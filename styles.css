@@ -1,10 +1,12 @@
 :root {
-    --primary-color: #1a1a2e;
-    --secondary-color: #16213e;
-    --accent-color: #0f3460;
-    --button-color: #1e88e5;
+    --primary-color: #121212;
+    --secondary-color: #1e1e1e;
+    --accent-color: #2d2d2d;
+    --button-color: #2196f3;
     --text-color: #ffffff;
-    --border-color: #2a2a3a;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --achievement-locked: #ff9800;
+    --achievement-unlocked: #4caf50;
 }
 
 * {
@@ -18,6 +20,7 @@ body {
     background-color: var(--primary-color);
     color: var(--text-color);
     min-height: 100vh;
+    font-size: 14px;
 }
 
 .container {
@@ -50,46 +53,48 @@ body {
 .balance {
     font-size: 1.2em;
     margin: 10px 0;
-    color: #4caf50;
+    color: var(--achievement-unlocked);
 }
 
 .btn {
     background-color: var(--button-color);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 12px 24px;
+    border-radius: 12px;
     cursor: pointer;
     font-size: 1em;
     transition: all 0.3s ease;
     margin: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn:hover {
-    background-color: #1565c0;
-    transform: scale(1.05);
+    background-color: #1976d2;
+    transform: scale(1.02);
 }
 
 .roulette-section {
     background-color: var(--secondary-color);
-    padding: 20px;
-    border-radius: 10px;
+    padding: 25px;
+    border-radius: 16px;
     margin-bottom: 20px;
+    border: 1px solid var(--border-color);
 }
 
 .bet-buttons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 15px;
     margin: 20px 0;
 }
 
 .bet-btn {
     background-color: var(--accent-color);
     color: white;
-    border: none;
+    border: 1px solid var(--border-color);
     padding: 15px;
-    border-radius: 5px;
+    border-radius: 12px;
     cursor: pointer;
     font-size: 1.1em;
     transition: all 0.3s ease;
@@ -97,7 +102,7 @@ body {
 
 .bet-btn:hover {
     background-color: var(--button-color);
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 #roulette-result {
@@ -105,7 +110,8 @@ body {
     margin-top: 20px;
     padding: 20px;
     background-color: var(--accent-color);
-    border-radius: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
 }
 
 .hidden {
@@ -121,9 +127,10 @@ body {
 
 .stat-box {
     background-color: var(--secondary-color);
-    padding: 15px;
-    border-radius: 10px;
+    padding: 20px;
+    border-radius: 12px;
     text-align: center;
+    border: 1px solid var(--border-color);
 }
 
 .achievements {
@@ -153,25 +160,27 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    padding: 20px;
+    background: var(--secondary-color);
+    border-radius: 12px;
     transition: all 0.3s ease;
     aspect-ratio: 1;
     text-align: center;
     position: relative;
     overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
 .achievement-item.unlocked {
-    background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.4));
+    background: linear-gradient(135deg, var(--achievement-unlocked), rgba(76, 175, 80, 0.3));
     border: 1px solid rgba(76, 175, 80, 0.5);
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
 }
 
 .achievement-item.locked {
-    opacity: 0.7;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+    background: linear-gradient(135deg, var(--achievement-locked), rgba(255, 152, 0, 0.3));
+    border: 1px solid rgba(255, 152, 0, 0.5);
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.2);
 }
 
 .achievement-emoji {
@@ -210,15 +219,16 @@ body {
 
 .bet-history-item {
     background-color: var(--secondary-color);
-    padding: 10px;
+    padding: 15px;
     margin: 5px 0;
-    border-radius: 5px;
+    border-radius: 12px;
     display: flex;
     justify-content: space-between;
+    border: 1px solid var(--border-color);
 }
 
 .win {
-    color: #4caf50;
+    color: var(--achievement-unlocked);
 }
 
 .lose {
@@ -227,15 +237,16 @@ body {
 
 .daily-bonus {
     background-color: var(--secondary-color);
-    padding: 20px;
-    border-radius: 10px;
+    padding: 25px;
+    border-radius: 16px;
     text-align: center;
     margin-top: 20px;
+    border: 1px solid var(--border-color);
 }
 
 #bonus-timer {
     margin-top: 10px;
-    color: #ff9800;
+    color: var(--achievement-locked);
 }
 
 @media (max-width: 768px) {
@@ -249,7 +260,7 @@ body {
     }
     
     .achievement-item {
-        padding: 12px;
+        padding: 15px;
     }
     
     .achievement-emoji {
@@ -292,12 +303,13 @@ body {
 
 .modal-content {
     background-color: var(--secondary-color);
-    padding: 20px;
-    border-radius: 10px;
+    padding: 25px;
+    border-radius: 16px;
     width: 90%;
     max-width: 400px;
     text-align: center;
     transform: translateY(-15%);
+    border: 1px solid var(--border-color);
 }
 
 .modal-content h3 {
@@ -306,11 +318,11 @@ body {
 
 .modal-content input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--accent-color);
     color: var(--text-color);
     font-size: 1.1em;
 }
