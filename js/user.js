@@ -5,6 +5,8 @@ class User {
     constructor() {
         this.tg = window.Telegram.WebApp;
         this.userId = this.tg.initDataUnsafe?.user?.id || 'default_user';
+        console.log('User constructor - userId:', this.userId);
+        
         this.userData = {
             name: this.tg.initDataUnsafe?.user?.first_name || 'Гость',
             balance: 0,
@@ -19,11 +21,12 @@ class User {
             totalAchievements: 0,
             lastBonusTime: 0
         };
+        console.log('Initial user data:', this.userData);
     }
 
     async initUser() {
         try {
-            console.log('Initializing user with ID:', this.userId);
+            console.log('Starting user initialization...');
             console.log('Telegram user data:', this.tg.initDataUnsafe?.user);
 
             if (!this.tg.initDataUnsafe?.user) {
@@ -32,7 +35,11 @@ class User {
 
             // Try to load existing user data from Firebase
             const userRef = ref(database, `users/${this.userId}`);
+            console.log('Attempting to load data from Firebase path:', `users/${this.userId}`);
+            
             const snapshot = await get(userRef);
+            console.log('Firebase snapshot:', snapshot.val());
+            
             const savedData = snapshot.val();
 
             if (savedData) {
@@ -62,6 +69,7 @@ class User {
     async saveUserData() {
         try {
             const userRef = ref(database, `users/${this.userId}`);
+            console.log('Saving user data to Firebase:', this.userData);
             await set(userRef, this.userData);
             console.log('User data saved successfully');
         } catch (error) {
