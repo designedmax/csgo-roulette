@@ -6,9 +6,9 @@ class History {
     }
 
     initEventListeners() {
-        document.getElementById('clear-history').addEventListener('click', () => {
+        document.getElementById('clear-history').addEventListener('click', async () => {
             if (confirm('Вы уверены, что хотите очистить историю ставок?')) {
-                this.user.clearBetHistory();
+                await this.user.clearBetHistory();
                 this.updateHistoryDisplay();
             }
         });

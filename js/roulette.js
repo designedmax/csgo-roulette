@@ -10,7 +10,7 @@ class Roulette {
         });
     }
 
-    handleBet(amount) {
+    async handleBet(amount) {
         if (this.user.userData.balance < amount) {
             alert('Недостаточно средств!');
             return;
@@ -18,7 +18,7 @@ class Roulette {
 
         // Deduct bet amount immediately
         this.user.userData.balance -= amount;
-        this.user.saveUserData();
+        await this.user.saveUserData();
         this.user.updateUI();
 
         // Disable bet buttons during animation
@@ -28,8 +28,8 @@ class Roulette {
         this.startAnimation();
 
         // Process bet after animation
-        setTimeout(() => {
-            const result = this.processBet(amount);
+        setTimeout(async () => {
+            const result = await this.processBet(amount);
             this.showResult(result);
             this.toggleBetButtons(true);
         }, 1000);
@@ -66,7 +66,7 @@ class Roulette {
         return emojis[Math.floor(Math.random() * emojis.length)];
     }
 
-    processBet(amount) {
+    async processBet(amount) {
         this.user.userData.totalGames++;
         
         const isWin = Math.random() < CONFIG.WIN_CHANCE;
@@ -93,32 +93,30 @@ class Roulette {
 
         // Add to history
         const history = new History(this.user);
-        history.addBetToHistory({
+        await this.user.addBetToHistory({
             ...result,
             timestamp: new Date().toISOString()
         });
 
-        // Update achievements
-        const achievements = new Achievements(this.user);
-        achievements.checkAndUnlockAchievements();
-        achievements.updateAchievementsDisplay();
-
-        // Save user data
-        this.user.saveUserData();
+        // Save updated user data
+        await this.user.saveUserData();
         this.user.updateUI();
 
         return result;
     }
 
     showResult(result) {
+        const resultElement = document.getElementById('roulette-result');
         const resultText = document.getElementById('result-text');
         
         if (result.win) {
-            resultText.innerHTML = `🎉 Поздравляем! Вы выиграли ${result.skin} (${result.amount} ₽)`;
-            resultText.className = 'win';
+            resultText.innerHTML = `
+                <div class="win">Поздравляем! Вы выиграли ${result.skin} (${result.amount} ₽)</div>
+            `;
         } else {
-            resultText.innerHTML = `😢 К сожалению, вы проиграли ${result.betAmount} ₽`;
-            resultText.className = 'lose';
+            resultText.innerHTML = `
+                <div class="lose">К сожалению, вы проиграли ${Math.abs(result.amount)} ₽</div>
+            `;
         }
     }
 
