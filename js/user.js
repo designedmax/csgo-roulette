@@ -4,7 +4,7 @@ class User {
     constructor() {
         this.userId = null;
         this.userData = null;
-        this.DATA_VERSION = 2; // Increment this number to force data reset
+        this.DATA_VERSION = 3; // Increment version to force reset
     }
 
     async initUser() {
@@ -20,7 +20,11 @@ class User {
                 return;
             }
 
-            // Initialize user data structure
+            // Force clear old data from Firebase
+            await database.ref(`users/${this.userId}`).remove();
+            console.log('Cleared old data from Firebase');
+
+            // Initialize fresh user data structure
             this.userData = {
                 id: this.userId,
                 firstName: tg.initDataUnsafe.user?.first_name || 'Игрок',
@@ -44,38 +48,9 @@ class User {
 
             console.log('Initial user data:', this.userData);
 
-            // Try to load user data from Firebase
-            const snapshot = await database.ref(`users/${this.userId}`).once('value');
-            console.log('Firebase snapshot:', snapshot.val());
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                console.log('Loaded data from Firebase:', data);
-                
-                // Check if data version is outdated
-                if (!data.dataVersion || data.dataVersion < this.DATA_VERSION) {
-                    console.log('Data version outdated, resetting user data');
-                    // Save new version of data
-                    await this.saveUserData();
-                } else {
-                    // Update only necessary fields, keep existing data
-                    this.userData = {
-                        ...this.userData,
-                        ...data,
-                        id: this.userId, // Ensure ID is not overwritten
-                        firstName: data.firstName || this.userData.firstName,
-                        lastName: data.lastName || this.userData.lastName,
-                        username: data.username || this.userData.username,
-                        photoUrl: data.photoUrl || this.userData.photoUrl,
-                        achievements: data.achievements || this.userData.achievements
-                    };
-                    console.log('Updated user data:', this.userData);
-                }
-            } else {
-                console.log('No data in Firebase, creating new user');
-                // Save initial user data to Firebase
-                await this.saveUserData();
-            }
+            // Save initial data to Firebase
+            await this.saveUserData();
+            console.log('Initial data saved to Firebase');
 
             this.updateUI();
         } catch (error) {
@@ -115,6 +90,10 @@ class User {
             console.log('Saving to Firebase:', userDataForFirebase);
             await database.ref(`users/${this.userId}`).set(userDataForFirebase);
             console.log('User data saved successfully');
+
+            // Verify the save
+            const snapshot = await database.ref(`users/${this.userId}`).once('value');
+            console.log('Verification - Data in Firebase:', snapshot.val());
         } catch (error) {
             console.error('Error saving user data:', error);
         }
