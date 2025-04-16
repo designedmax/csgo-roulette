@@ -115,4 +115,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Unlock new player achievement
     achievements.checkAndUnlockAchievements();
+
+    // Check Firebase connection
+    database.ref('.info/connected').on('value', (snapshot) => {
+        if (snapshot.val() === false) {
+            console.error('Firebase connection failed');
+        } else {
+            console.log('Firebase connected successfully');
+            
+            // View all users data
+            database.ref('users').once('value', (snapshot) => {
+                const data = snapshot.val();
+                console.log('Users data:', data);
+                
+                if (!data) {
+                    console.log('No data found in database');
+                } else {
+                    console.log('Found users:', Object.keys(data).length);
+                    Object.entries(data).forEach(([userId, userData]) => {
+                        console.log(`User ${userId}:`, userData);
+                    });
+                }
+            });
+        }
+    });
 }); 
