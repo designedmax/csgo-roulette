@@ -80,16 +80,30 @@ class User {
 
     updateUI() {
         // Update main page
-        document.getElementById('user-balance').textContent = `${this.userData.balance} ₽`;
+        const userAvatar = document.getElementById('user-avatar');
+        const userName = document.getElementById('user-name');
+        const userBalance = document.getElementById('user-balance');
+        
+        if (userAvatar) userAvatar.src = this.tg.initDataUnsafe?.user?.photo_url || '';
+        if (userName) userName.textContent = this.userData.name;
+        if (userBalance) userBalance.textContent = this.userData.balance;
         
         // Update profile page
-        document.getElementById('user-avatar').src = this.tg.initDataUnsafe?.user?.photo_url || '';
-        document.getElementById('user-name').textContent = this.userData.name;
-        document.getElementById('profile-balance').textContent = `${this.userData.balance} ₽`;
-        document.getElementById('total-games').textContent = this.userData.totalGames;
-        document.getElementById('total-wins').textContent = this.userData.totalWins;
-        document.getElementById('total-losses').textContent = this.userData.totalLosses;
-        document.getElementById('total-achievements').textContent = this.userData.totalAchievements;
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileName = document.getElementById('profile-name');
+        const profileBalance = document.getElementById('profile-balance');
+        const totalGames = document.getElementById('total-games');
+        const totalWins = document.getElementById('total-wins');
+        const totalLosses = document.getElementById('total-losses');
+        const totalAchievements = document.getElementById('total-achievements');
+        
+        if (profileAvatar) profileAvatar.src = this.tg.initDataUnsafe?.user?.photo_url || '';
+        if (profileName) profileName.textContent = this.userData.name;
+        if (profileBalance) profileBalance.textContent = this.userData.balance;
+        if (totalGames) totalGames.textContent = this.userData.totalGames;
+        if (totalWins) totalWins.textContent = this.userData.totalWins;
+        if (totalLosses) totalLosses.textContent = this.userData.totalLosses;
+        if (totalAchievements) totalAchievements.textContent = this.userData.totalAchievements;
     }
 
     async updateBalance(amount) {

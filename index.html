@@ -13,8 +13,10 @@
             <div class="header">
                 <h1>Telegram Roulette</h1>
             </div>
-            <div class="balance-container">
-                <span id="user-balance">0 ₽</span>
+            <div class="user-info">
+                <img id="user-avatar" src="" alt="Аватар">
+                <h2 id="user-name"></h2>
+                <div class="balance">Баланс: <span id="user-balance">0</span> ₽</div>
             </div>
             <div class="roulette-container">
                 <div id="roulette-result" class="hidden">
@@ -27,20 +29,25 @@
                     <button class="bet-btn" data-amount="500">500 ₽</button>
                 </div>
             </div>
+            <div class="daily-bonus">
+                <h3>Ежедневный бонус</h3>
+                <button id="daily-bonus-btn" class="btn">Получить 5000 ₽</button>
+                <div id="bonus-timer"></div>
+            </div>
             <div class="navigation">
-                <button id="profile-btn">Профиль</button>
-                <button id="history-btn">История</button>
+                <button id="profile-btn" class="nav-btn">Профиль</button>
+                <button id="history-btn" class="nav-btn">История</button>
             </div>
         </div>
 
         <div id="profile-page" class="page">
             <div class="header">
                 <h1>Профиль</h1>
-                <button id="back-btn">Назад</button>
+                <button id="back-btn" class="nav-btn">Назад</button>
             </div>
             <div class="profile-info">
-                <img id="user-avatar" src="" alt="Аватар">
-                <h2 id="user-name"></h2>
+                <img id="profile-avatar" src="" alt="Аватар">
+                <h2 id="profile-name"></h2>
                 <p>Баланс: <span id="profile-balance">0 ₽</span></p>
                 <p>Всего игр: <span id="total-games">0</span></p>
                 <p>Побед: <span id="total-wins">0</span></p>
@@ -56,10 +63,10 @@
         <div id="history-page" class="page">
             <div class="header">
                 <h1>История ставок</h1>
-                <button id="back-btn">Назад</button>
+                <button id="back-btn" class="nav-btn">Назад</button>
             </div>
             <div id="bets-history"></div>
-            <button id="clear-history">Очистить историю</button>
+            <button id="clear-history" class="btn">Очистить историю</button>
         </div>
     </div>
 
