@@ -3,280 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS:GO Skin Roulette</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Load Telegram WebApp SDK first -->
+    <title>Telegram Roulette</title>
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Load Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getDatabase } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDZuLclwcWqOiLEl542NmkdG_MwTQV-kWo",
-            authDomain: "cs-roll.firebaseapp.com",
-            databaseURL: "https://cs-roll-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "cs-roll",
-            storageBucket: "cs-roll.firebasestorage.app",
-            messagingSenderId: "66184383207",
-            appId: "1:66184383207:web:d265b002fcf826a4f9b042"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        window.database = database; // Make database available globally
-    </script>
-
-    <!-- Load application scripts -->
-    <script type="module" src="/js/config.js"></script>
-    <script type="module" src="/js/firebase.js"></script>
-    <script type="module" src="/js/user.js"></script>
-    <script type="module" src="/js/roulette.js"></script>
-    <script type="module" src="/js/achievements.js"></script>
-    <script type="module" src="/js/history.js"></script>
-    <script type="module" src="/js/app.js"></script>
 </head>
 <body>
     <div class="container">
         <div id="main-page" class="page active">
-            <div class="user-info">
-                <img id="user-avatar" src="" alt="User Avatar">
-                <h2 id="user-name"></h2>
-                <div class="balance">Баланс: <span id="user-balance">0</span> ₽</div>
-                <button id="profile-btn" class="btn">Профиль</button>
+            <div class="header">
+                <h1>Telegram Roulette</h1>
             </div>
-
-            <div class="roulette-section">
-                <h3>Выберите ставку</h3>
-                <div class="bet-buttons">
-                    <button class="bet-btn" data-amount="100">100 ₽</button>
-                    <button class="bet-btn" data-amount="300">300 ₽</button>
-                    <button class="bet-btn" data-amount="500">500 ₽</button>
-                    <button class="bet-btn" data-amount="1000">1000 ₽</button>
-                </div>
+            <div class="balance-container">
+                <span id="user-balance">0 ₽</span>
+            </div>
+            <div class="roulette-container">
                 <div id="roulette-result" class="hidden">
-                    <div id="result-animation"></div>
-                    <div id="result-text"></div>
+                    <p id="result-text"></p>
+                </div>
+                <div class="bet-buttons">
+                    <button class="bet-btn" data-amount="10">10 ₽</button>
+                    <button class="bet-btn" data-amount="50">50 ₽</button>
+                    <button class="bet-btn" data-amount="100">100 ₽</button>
+                    <button class="bet-btn" data-amount="500">500 ₽</button>
                 </div>
             </div>
-
-            <div class="daily-bonus">
-                <h3>Ежедневный бонус</h3>
-                <button id="daily-bonus-btn" class="btn">Получить 5000 ₽</button>
-                <div id="bonus-timer"></div>
+            <div class="navigation">
+                <button id="profile-btn">Профиль</button>
+                <button id="history-btn">История</button>
             </div>
         </div>
 
-        <div id="profile-page" class="page hidden">
-            <div class="profile-header">
-                <button id="back-btn" class="btn back-btn">← Назад</button>
-                <img id="profile-avatar" src="" alt="Profile Avatar">
-                <h2 id="profile-name"></h2>
-                <div class="profile-actions">
-                    <button id="deposit-btn" class="btn">Пополнить баланс</button>
-                    <button id="withdraw-btn" class="btn">Вывести средства</button>
-                </div>
+        <div id="profile-page" class="page">
+            <div class="header">
+                <h1>Профиль</h1>
+                <button id="back-btn">Назад</button>
             </div>
-
-            <div class="stats">
-                <div class="stat-box">
-                    <h4>Дата регистрации</h4>
-                    <p id="registration-date"></p>
-                </div>
-                <div class="stat-box">
-                    <h4>Всего игр</h4>
-                    <p id="total-games"></p>
-                </div>
-                <div class="stat-box">
-                    <h4>Побед</h4>
-                    <p id="total-wins"></p>
-                </div>
-                <div class="stat-box">
-                    <h4>Достижений</h4>
-                    <p id="total-achievements"></p>
-                </div>
+            <div class="profile-info">
+                <img id="user-avatar" src="" alt="Аватар">
+                <h2 id="user-name"></h2>
+                <p>Баланс: <span id="profile-balance">0 ₽</span></p>
+                <p>Всего игр: <span id="total-games">0</span></p>
+                <p>Побед: <span id="total-wins">0</span></p>
+                <p>Поражений: <span id="total-losses">0</span></p>
+                <p>Достижения: <span id="total-achievements">0</span></p>
             </div>
-
             <div class="achievements">
                 <h3>Достижения</h3>
-                <div class="achievements-container">
-                    <div id="achievements-list" class="achievements-list"></div>
-                </div>
+                <div id="achievements-list"></div>
             </div>
+        </div>
 
-            <div class="history">
-                <h3>История ставок</h3>
-                <div id="bets-history"></div>
-                <button id="clear-history" class="btn">Очистить историю</button>
+        <div id="history-page" class="page">
+            <div class="header">
+                <h1>История ставок</h1>
+                <button id="back-btn">Назад</button>
             </div>
+            <div id="bets-history"></div>
+            <button id="clear-history">Очистить историю</button>
         </div>
     </div>
 
-    <!-- Модальное окно для пополнения баланса -->
-    <div id="deposit-modal" class="modal hidden">
-        <div class="modal-content">
-            <h3>Пополнение баланса</h3>
-            <input type="number" id="deposit-amount" placeholder="Введите сумму" min="1">
-            <div class="modal-buttons">
-                <button id="confirm-deposit" class="btn">Пополнить</button>
-                <button id="cancel-deposit" class="btn">Отмена</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модальное окно для вывода средств -->
-    <div id="withdraw-modal" class="modal hidden">
-        <div class="modal-content">
-            <h3>Вывод средств</h3>
-            <input type="number" id="withdraw-amount" placeholder="Введите сумму" min="1">
-            <div class="modal-buttons">
-                <button id="confirm-withdraw" class="btn">Вывести</button>
-                <button id="cancel-withdraw" class="btn">Отмена</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        // Initialize Telegram WebApp
-        const tg = window.Telegram.WebApp;
-        console.log('Telegram WebApp:', tg);
-        
-        if (!tg) {
-            console.error('Telegram WebApp not found');
-            alert('Ошибка: Telegram WebApp не найден');
-        } else {
-            tg.ready();
-            tg.expand();
-            console.log('Telegram WebApp initialized');
-        }
-
-        // Log Telegram data
-        console.log('Telegram init data:', tg.initDataUnsafe);
-        console.log('Telegram user:', tg.initDataUnsafe.user);
-
-        import { CONFIG } from './js/config.js';
-        import { User } from './js/user.js';
-        import { Roulette } from './js/roulette.js';
-        import { Achievements } from './js/achievements.js';
-        import { History } from './js/history.js';
-        import { database } from './js/firebase.js';
-
-        // Initialize application
-        async function initApp() {
-            try {
-                console.log('Starting application initialization...');
-                
-                // Initialize user first
-                const user = new User();
-                await user.initUser();
-                
-                // Initialize other components
-                const roulette = new Roulette(user);
-                const achievements = new Achievements(user);
-                const history = new History(user);
-
-                // Initialize event listeners
-                document.getElementById('profile-btn').addEventListener('click', () => {
-                    document.getElementById('main-page').classList.add('hidden');
-                    document.getElementById('profile-page').classList.remove('hidden');
-                    user.updateUI();
-                });
-
-                document.getElementById('back-btn').addEventListener('click', () => {
-                    document.getElementById('profile-page').classList.add('hidden');
-                    document.getElementById('main-page').classList.remove('hidden');
-                });
-
-                // Handle daily bonus
-                const dailyBonusBtn = document.getElementById('daily-bonus-btn');
-                const bonusTimer = document.getElementById('bonus-timer');
-                
-                dailyBonusBtn.addEventListener('click', async () => {
-                    if (await user.canGetDailyBonus()) {
-                        await user.getDailyBonus();
-                        alert('Бонус получен!');
-                        updateBonusTimer();
-                    } else {
-                        alert('Бонус уже получен сегодня. Приходите завтра!');
-                    }
-                });
-
-                // Update bonus timer
-                function updateBonusTimer() {
-                    const now = Date.now();
-                    const lastBonusTime = user.userData.lastBonusTime;
-                    const timeLeft = 24 * 60 * 60 * 1000 - (now - lastBonusTime);
-                    
-                    if (timeLeft > 0) {
-                        const hours = Math.floor(timeLeft / (60 * 60 * 1000));
-                        const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
-                        bonusTimer.textContent = `Следующий бонус через: ${hours}ч ${minutes}м`;
-                    } else {
-                        bonusTimer.textContent = 'Бонус доступен!';
-                    }
-                }
-
-                // Update timer every minute
-                setInterval(updateBonusTimer, 60000);
-                updateBonusTimer();
-
-                // Handle bet buttons
-                document.querySelectorAll('.bet-btn').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const amount = parseInt(button.dataset.amount);
-                        roulette.handleBet(amount);
-                    });
-                });
-
-                // Handle deposit/withdraw buttons
-                document.getElementById('deposit-btn').addEventListener('click', () => {
-                    document.getElementById('deposit-modal').classList.remove('hidden');
-                });
-
-                document.getElementById('withdraw-btn').addEventListener('click', () => {
-                    document.getElementById('withdraw-modal').classList.remove('hidden');
-                });
-
-                // Handle modal buttons
-                document.getElementById('confirm-deposit').addEventListener('click', async () => {
-                    const amount = parseInt(document.getElementById('deposit-amount').value);
-                    if (amount > 0) {
-                        await user.updateBalance(amount);
-                        document.getElementById('deposit-modal').classList.add('hidden');
-                    }
-                });
-
-                document.getElementById('confirm-withdraw').addEventListener('click', async () => {
-                    const amount = parseInt(document.getElementById('withdraw-amount').value);
-                    if (amount > 0 && amount <= user.userData.balance) {
-                        await user.updateBalance(-amount);
-                        document.getElementById('withdraw-modal').classList.add('hidden');
-                    }
-                });
-
-                // Close modals
-                document.getElementById('cancel-deposit').addEventListener('click', () => {
-                    document.getElementById('deposit-modal').classList.add('hidden');
-                });
-
-                document.getElementById('cancel-withdraw').addEventListener('click', () => {
-                    document.getElementById('withdraw-modal').classList.add('hidden');
-                });
-
-                console.log('Application initialized successfully');
-            } catch (error) {
-                console.error('Error initializing application:', error);
-                alert('Произошла ошибка при инициализации приложения: ' + error.message);
-            }
-        }
-
-        // Start application
-        initApp().catch(error => {
-            console.error('Fatal error during initialization:', error);
-            alert('Критическая ошибка: ' + error.message);
-        });
-    </script>
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/user.js"></script>
+    <script type="module" src="js/roulette.js"></script>
+    <script type="module" src="js/achievements.js"></script>
+    <script type="module" src="js/history.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html> 

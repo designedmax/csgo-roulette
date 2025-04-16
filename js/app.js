@@ -38,14 +38,31 @@ async function initApp() {
 
         // Initialize event listeners
         document.getElementById('profile-btn').addEventListener('click', () => {
-            document.getElementById('main-page').classList.add('hidden');
-            document.getElementById('profile-page').classList.remove('hidden');
+            document.getElementById('main-page').classList.remove('active');
+            document.getElementById('profile-page').classList.add('active');
             user.updateUI();
         });
 
-        document.getElementById('back-btn').addEventListener('click', () => {
-            document.getElementById('profile-page').classList.add('hidden');
-            document.getElementById('main-page').classList.remove('hidden');
+        document.getElementById('history-btn').addEventListener('click', () => {
+            document.getElementById('main-page').classList.remove('active');
+            document.getElementById('history-page').classList.add('active');
+        });
+
+        document.querySelectorAll('#back-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                document.getElementById('main-page').classList.add('active');
+            });
+        });
+
+        // Handle bet buttons
+        document.querySelectorAll('.bet-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const amount = parseInt(button.dataset.amount);
+                roulette.handleBet(amount);
+            });
         });
 
         // Handle daily bonus
@@ -80,14 +97,6 @@ async function initApp() {
         // Update timer every minute
         setInterval(updateBonusTimer, 60000);
         updateBonusTimer();
-
-        // Handle bet buttons
-        document.querySelectorAll('.bet-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const amount = parseInt(button.dataset.amount);
-                roulette.handleBet(amount);
-            });
-        });
 
         // Handle deposit/withdraw buttons
         document.getElementById('deposit-btn').addEventListener('click', () => {
