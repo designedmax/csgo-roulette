@@ -3,76 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Roulette</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>CS:GO Roulette</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
+        <!-- Main Page -->
         <div id="main-page" class="page active">
             <div class="user-info">
-                <img id="user-avatar" src="" alt="Аватар">
+                <img id="user-avatar" src="" alt="User Avatar" class="avatar">
                 <div class="user-details">
-                    <h2 id="user-name"></h2>
-                    <div class="balance">Баланс: <span id="user-balance">0</span> ₽</div>
-                    <div class="user-actions">
-                        <button id="deposit-btn" class="btn">Пополнить</button>
-                        <button id="withdraw-btn" class="btn">Вывести</button>
-                        <button id="profile-btn" class="btn">Профиль</button>
-                    </div>
+                    <span id="user-name" class="name"></span>
+                    <span id="user-balance" class="balance">0 ₽</span>
                 </div>
+                <button id="profile-btn" class="btn">Профиль</button>
             </div>
+
             <div class="roulette-container">
-                <div id="roulette-result" class="hidden">
-                    <p id="result-text"></p>
-                </div>
                 <div class="bet-buttons">
                     <button class="bet-btn" data-amount="100">100 ₽</button>
                     <button class="bet-btn" data-amount="300">300 ₽</button>
                     <button class="bet-btn" data-amount="500">500 ₽</button>
                     <button class="bet-btn" data-amount="1000">1000 ₽</button>
                 </div>
+                <div id="result" class="result"></div>
             </div>
+
             <div class="daily-bonus">
                 <h3>Ежедневный бонус</h3>
                 <button id="daily-bonus-btn" class="btn">Получить 5000 ₽</button>
-                <div id="bonus-timer"></div>
+                <span id="bonus-timer"></span>
+            </div>
+
+            <div class="action-buttons">
+                <button id="deposit-btn" class="btn">Пополнить</button>
+                <button id="withdraw-btn" class="btn">Вывести</button>
             </div>
         </div>
 
+        <!-- Profile Page -->
         <div id="profile-page" class="page">
-            <div class="header">
-                <button id="back-btn" class="btn">Назад</button>
+            <div class="profile-header">
+                <img id="profile-avatar" src="" alt="Profile Avatar" class="avatar">
+                <div class="profile-details">
+                    <span id="profile-name" class="name"></span>
+                    <span id="profile-balance" class="balance">0 ₽</span>
+                </div>
             </div>
-            <div class="profile-info">
-                <img id="profile-avatar" src="" alt="Аватар">
-                <h2 id="profile-name"></h2>
-                <p>Баланс: <span id="profile-balance">0 ₽</span></p>
-                <p>Всего игр: <span id="total-games">0</span></p>
-                <p>Побед: <span id="total-wins">0</span></p>
-                <p>Поражений: <span id="total-losses">0</span></p>
-                <p>Достижения: <span id="total-achievements">0</span></p>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span>Всего игр</span>
+                    <span id="total-games">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Побед</span>
+                    <span id="total-wins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Поражений</span>
+                    <span id="total-losses">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Достижений</span>
+                    <span id="total-achievements">0</span>
+                </div>
             </div>
+
             <div class="achievements">
                 <h3>Достижения</h3>
-                <div id="achievements-list"></div>
+                <div id="achievements-list" class="achievements-list"></div>
             </div>
+
+            <button id="back-btn" class="btn">Назад</button>
         </div>
 
+        <!-- History Page -->
         <div id="history-page" class="page">
-            <div class="header">
-                <button id="back-btn" class="btn">Назад</button>
-            </div>
-            <div id="bets-history"></div>
+            <h3>История ставок</h3>
+            <div id="history-list" class="history-list"></div>
             <button id="clear-history" class="btn">Очистить историю</button>
+            <button id="back-btn" class="btn">Назад</button>
         </div>
     </div>
 
-    <!-- Deposit Modal -->
+    <!-- Modals -->
     <div id="deposit-modal" class="modal hidden">
         <div class="modal-content">
             <h3>Пополнение баланса</h3>
-            <input type="number" id="deposit-amount" placeholder="Сумма пополнения">
+            <input type="number" id="deposit-amount" placeholder="Сумма">
             <div class="modal-buttons">
                 <button id="confirm-deposit" class="btn">Подтвердить</button>
                 <button id="cancel-deposit" class="btn">Отмена</button>
@@ -80,11 +102,10 @@
         </div>
     </div>
 
-    <!-- Withdraw Modal -->
     <div id="withdraw-modal" class="modal hidden">
         <div class="modal-content">
             <h3>Вывод средств</h3>
-            <input type="number" id="withdraw-amount" placeholder="Сумма вывода">
+            <input type="number" id="withdraw-amount" placeholder="Сумма">
             <div class="modal-buttons">
                 <button id="confirm-withdraw" class="btn">Подтвердить</button>
                 <button id="cancel-withdraw" class="btn">Отмена</button>

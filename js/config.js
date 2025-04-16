@@ -1,75 +1,96 @@
-const CONFIG = {
-    WIN_CHANCE: 0.4, // 40% chance to win
-    DAILY_BONUS_AMOUNT: 5000,
-    BONUS_COOLDOWN: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-    BET_AMOUNTS: [100, 300, 500, 1000],
-    SKINS: [
-        { name: 'AK-47 | Красная линия', value: 2000 },
-        { name: 'AWP | Фея', value: 3000 },
-        { name: 'M4A4 | Крушитель', value: 1500 },
-        { name: 'Нож | Бабочка', value: 5000 },
-        { name: 'Вилка | В жопу', value: 1000 },
-        { name: 'Фак | Нах', value: 800 },
-        { name: 'UMP | Сосамба', value: 1200 }
-    ],
+export const CONFIG = {
+    // Firebase configuration
+    FIREBASE_CONFIG: {
+        apiKey: "AIzaSyDZuLclwcWqOiLEl542NmkdG_MwTQV-kWo",
+        authDomain: "cs-roll.firebaseapp.com",
+        databaseURL: "https://cs-roll-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "cs-roll",
+        storageBucket: "cs-roll.firebasestorage.app",
+        messagingSenderId: "66184383207",
+        appId: "1:66184383207:web:d265b002fcf826a4f9b042"
+    },
+
+    // Game settings
+    GAME: {
+        WIN_CHANCE: 0.4, // 40% chance to win
+        MIN_BET: 100,
+        MAX_BET: 1000,
+        DAILY_BONUS: 5000
+    },
+
+    // Achievements configuration
     ACHIEVEMENTS: [
         {
-            id: "new_player",
-            name: "Салага",
-            description: "Добро пожаловать",
-            emoji: "👋",
-            unlocked: false
+            id: 'first_win',
+            title: 'Первая победа',
+            description: 'Выиграть первую игру',
+            condition: (userData) => userData.totalWins >= 1,
+            reward: 1000
         },
         {
-            id: "first_win",
-            name: "Вкус победы",
-            description: "Выиграть первую игру",
-            emoji: "🎉",
-            unlocked: false
+            id: 'five_wins',
+            title: 'Пять побед',
+            description: 'Выиграть 5 игр',
+            condition: (userData) => userData.totalWins >= 5,
+            reward: 5000
         },
         {
-            id: "rich",
-            name: "Богач",
-            description: "Накопить 10000 рублей",
-            emoji: "💰",
-            unlocked: false
+            id: 'ten_wins',
+            title: 'Десять побед',
+            description: 'Выиграть 10 игр',
+            condition: (userData) => userData.totalWins >= 10,
+            reward: 10000
         },
         {
-            id: "gambler",
-            name: "Азартный игрок",
-            description: "Сыграть 100 игр",
-            emoji: "🎲",
-            unlocked: false
+            id: 'rich',
+            title: 'Богач',
+            description: 'Накопить 10000 рублей',
+            condition: (userData) => userData.balance >= 10000,
+            reward: 5000
         },
         {
-            id: "lucky",
-            name: "Везунчик",
-            description: "Выиграть 3 раза подряд",
-            emoji: "🍀",
-            unlocked: false
+            id: 'millionaire',
+            title: 'Миллионер',
+            description: 'Накопить 50000 рублей',
+            condition: (userData) => userData.balance >= 50000,
+            reward: 10000
         },
         {
-            id: "big_win",
-            name: "Крупный выигрыш",
-            description: "Выиграть 5000 рублей за одну игру",
-            emoji: "💎",
-            unlocked: false
+            id: 'gambler',
+            title: 'Азартный игрок',
+            description: 'Сыграть 50 игр',
+            condition: (userData) => userData.totalGames >= 50,
+            reward: 5000
         },
         {
-            id: "veteran",
-            name: "Ветеран",
-            description: "Сыграть 500 игр",
-            emoji: "🏆",
-            unlocked: false
+            id: 'professional',
+            title: 'Профессионал',
+            description: 'Сыграть 100 игр',
+            condition: (userData) => userData.totalGames >= 100,
+            reward: 10000
         },
         {
-            id: "millionaire",
-            name: "Миллионер",
-            description: "Накопить 100000 рублей",
-            emoji: "💵",
-            unlocked: false
+            id: 'lucky',
+            title: 'Везунчик',
+            description: 'Выиграть 3 раза подряд',
+            condition: (userData) => {
+                const history = userData.betHistory.slice(0, 3);
+                return history.length === 3 && history.every(bet => bet.won);
+            },
+            reward: 5000
         }
-    ]
-};
+    ],
 
-export { CONFIG }; 
+    // Default user data
+    DEFAULT_USER_DATA: {
+        name: '',
+        balance: 0,
+        totalGames: 0,
+        totalWins: 0,
+        totalLosses: 0,
+        betHistory: [],
+        achievements: [],
+        lastBonusTime: 0,
+        firstLoginTime: Date.now()
+    }
+}; 

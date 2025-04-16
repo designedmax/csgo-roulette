@@ -3,12 +3,11 @@ import { CONFIG } from './config.js';
 class Roulette {
     constructor(user) {
         this.user = user;
-        this.resultElement = document.getElementById('roulette-result');
-        this.resultText = document.getElementById('result-text');
-        this.initEventListeners();
+        this.resultElement = document.getElementById('result');
+        this.setupEventListeners();
     }
 
-    initEventListeners() {
+    setupEventListeners() {
         document.querySelectorAll('.bet-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const amount = parseInt(button.dataset.amount);
@@ -19,59 +18,63 @@ class Roulette {
 
     async handleBet(amount) {
         if (amount > this.user.userData.balance) {
-            alert('Недостаточно средств!');
+            this.showResult('Недостаточно средств', false);
             return;
         }
 
-        // Deduct bet amount
-        this.user.userData.balance -= amount;
-        await this.user.saveUserData();
-        this.user.updateUI();
+        // Disable buttons during bet processing
+        this.setButtonsState(false);
+        this.showResult('Ставка обрабатывается...', null);
 
-        // Show loading state
-        this.resultElement.classList.remove('hidden');
-        this.resultText.textContent = 'Крутим...';
-
-        // Simulate delay
-        setTimeout(async () => {
-            await this.processBet(amount);
-        }, 2000);
+        try {
+            const won = await this.processBet(amount);
+            this.showResult(won ? `Вы выиграли ${amount * 2} ₽!` : 'Вы проиграли', won);
+        } catch (error) {
+            console.error('Error processing bet:', error);
+            this.showResult('Произошла ошибка', false);
+        } finally {
+            this.setButtonsState(true);
+        }
     }
 
     async processBet(amount) {
-        const win = Math.random() < 0.4; // 40% chance to win
-        const result = win ? 'win' : 'lose';
-        const winAmount = win ? amount * 2 : 0;
-
+        const won = Math.random() < CONFIG.GAME.WIN_CHANCE;
+        
         // Update user data
         this.user.userData.totalGames++;
-        if (win) {
+        if (won) {
             this.user.userData.totalWins++;
-            this.user.userData.balance += winAmount;
+            this.user.userData.balance += amount;
         } else {
             this.user.userData.totalLosses++;
+            this.user.userData.balance -= amount;
         }
 
         // Add to history
         await this.user.addBetToHistory({
             amount,
-            result,
-            winAmount,
-            timestamp: new Date().toISOString()
+            won,
+            timestamp: Date.now()
         });
 
         // Save updated data
         await this.user.saveUserData();
-        this.user.updateUI();
 
-        // Show result
-        this.showResult(result, amount, winAmount);
+        return won;
     }
 
-    showResult(result, amount, winAmount) {
-        this.resultText.innerHTML = result === 'win' 
-            ? `Поздравляем! Вы выиграли ${winAmount} ₽`
-            : `К сожалению, вы проиграли ${amount} ₽`;
+    showResult(message, won) {
+        this.resultElement.textContent = message;
+        this.resultElement.className = 'result';
+        if (won !== null) {
+            this.resultElement.classList.add(won ? 'win' : 'lose');
+        }
+    }
+
+    setButtonsState(enabled) {
+        document.querySelectorAll('.bet-btn').forEach(button => {
+            button.disabled = !enabled;
+        });
     }
 
     checkAchievements(result) {
