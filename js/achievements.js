@@ -11,30 +11,24 @@ class Achievements {
     }
 
     initializeAchievements() {
-        // Force update achievements with new data
-        this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
-        this.user.saveUserData();
-        // Initialize achievements if they don't exist
-        if (!this.user.userData.achievements || this.user.userData.achievements.length === 0) {
-            this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
-            this.user.saveUserData();
-        }
-
-        // Ensure all achievements from CONFIG exist in user's achievements
-        CONFIG.ACHIEVEMENTS.forEach(configAchievement => {
-            const userAchievement = this.user.userData.achievements.find(a => a.id === configAchievement.id);
-            if (!userAchievement) {
-                this.user.userData.achievements.push({
-                    ...configAchievement,
-                    unlocked: false
-                });
-            }
+        // Get current achievements with their unlocked status
+        const currentAchievements = this.user.userData.achievements || [];
+        const unlockedStatus = {};
+        
+        // Store current unlocked status
+        currentAchievements.forEach(achievement => {
+            unlockedStatus[achievement.id] = achievement.unlocked;
         });
 
-        // Remove any achievements that don't exist in CONFIG
-        this.user.userData.achievements = this.user.userData.achievements.filter(achievement => 
-            CONFIG.ACHIEVEMENTS.some(configAchievement => configAchievement.id === achievement.id)
-        );
+        // Initialize with new data
+        this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
+
+        // Restore unlocked status
+        this.user.userData.achievements.forEach(achievement => {
+            if (unlockedStatus[achievement.id]) {
+                achievement.unlocked = true;
+            }
+        });
 
         this.user.saveUserData();
     }
@@ -119,6 +113,12 @@ class Achievements {
         // Rich achievement
         if (this.user.userData.balance >= 5000 && !achievements.find(a => a.id === 'rich').unlocked) {
             achievements.find(a => a.id === 'rich').unlocked = true;
+            updated = true;
+        }
+
+        // Risky achievement (at least one bet of 1000 or more)
+        if (this.user.userData.betHistory && this.user.userData.betHistory.some(bet => bet.amount >= 1000) && !achievements.find(a => a.id === 'risky').unlocked) {
+            achievements.find(a => a.id === 'risky').unlocked = true;
             updated = true;
         }
 
