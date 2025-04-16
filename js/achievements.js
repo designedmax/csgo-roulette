@@ -11,22 +11,43 @@ class Achievements {
     }
 
     initializeAchievements() {
-        // Get current achievements with their unlocked status
-        const currentAchievements = this.user.userData.achievements || [];
-        const unlockedStatus = {};
-        
-        // Store current unlocked status
-        currentAchievements.forEach(achievement => {
-            unlockedStatus[achievement.id] = achievement.unlocked;
-        });
-
         // Initialize with new data
         this.user.userData.achievements = JSON.parse(JSON.stringify(CONFIG.ACHIEVEMENTS));
+        
+        // Check all achievements through history
+        const betHistory = this.user.userData.betHistory || [];
+        const totalGames = this.user.userData.totalGames || 0;
+        const totalWins = this.user.userData.totalWins || 0;
+        const totalLosses = totalGames - totalWins;
+        const balance = this.user.userData.balance || 0;
 
-        // Restore unlocked status
+        // Check each achievement
         this.user.userData.achievements.forEach(achievement => {
-            if (unlockedStatus[achievement.id]) {
-                achievement.unlocked = true;
+            switch(achievement.id) {
+                case 'new_player':
+                    achievement.unlocked = true;
+                    break;
+                case 'first_win':
+                    achievement.unlocked = totalWins > 0;
+                    break;
+                case 'lucky':
+                    achievement.unlocked = totalWins >= 10;
+                    break;
+                case 'pro':
+                    achievement.unlocked = totalWins >= 50;
+                    break;
+                case 'sheep':
+                    achievement.unlocked = totalLosses >= 10;
+                    break;
+                case 'loser':
+                    achievement.unlocked = totalLosses >= 30;
+                    break;
+                case 'rich':
+                    achievement.unlocked = balance >= 5000;
+                    break;
+                case 'risky':
+                    achievement.unlocked = betHistory.some(bet => bet.amount >= 1000);
+                    break;
             }
         });
 
@@ -35,8 +56,10 @@ class Achievements {
 
     updateAchievementsDisplay() {
         const achievementsList = document.getElementById('achievements-list');
+        if (!achievementsList) return;
+        
         achievementsList.innerHTML = '';
-
+        
         this.user.userData.achievements.forEach(achievement => {
             const achievementElement = document.createElement('div');
             achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
@@ -50,7 +73,7 @@ class Achievements {
                     <p class="achievement-description">${achievement.description}</p>
                 </div>
             `;
-
+            
             achievementsList.appendChild(achievementElement);
         });
     }
