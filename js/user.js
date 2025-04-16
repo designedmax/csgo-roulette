@@ -20,6 +20,16 @@ class User {
                 return;
             }
 
+            // Test Firebase connection
+            try {
+                const testRef = database.ref('test');
+                await testRef.set({ test: Date.now() });
+                console.log('Firebase connection test successful');
+            } catch (error) {
+                console.error('Firebase connection test failed:', error);
+                return;
+            }
+
             // Initialize fresh user data structure
             this.userData = {
                 id: this.userId,
@@ -43,26 +53,34 @@ class User {
             };
 
             // Try to load existing data from Firebase
-            const snapshot = await database.ref(`users/${this.userId}`).once('value');
-            
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                console.log('Loaded data from Firebase:', data);
+            try {
+                const snapshot = await database.ref(`users/${this.userId}`).once('value');
+                console.log('Firebase snapshot:', snapshot.val());
                 
-                // Update user data with existing data
-                this.userData = {
-                    ...this.userData,
-                    ...data,
-                    id: this.userId,
-                    firstName: data.firstName || this.userData.firstName,
-                    lastName: data.lastName || this.userData.lastName,
-                    username: data.username || this.userData.username,
-                    photoUrl: data.photoUrl || this.userData.photoUrl,
-                    achievements: data.achievements || this.userData.achievements,
-                    betHistory: data.betHistory || this.userData.betHistory
-                };
-            } else {
-                console.log('No existing data found, creating new user');
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    console.log('Loaded data from Firebase:', data);
+                    
+                    // Update user data with existing data
+                    this.userData = {
+                        ...this.userData,
+                        ...data,
+                        id: this.userId,
+                        firstName: data.firstName || this.userData.firstName,
+                        lastName: data.lastName || this.userData.lastName,
+                        username: data.username || this.userData.username,
+                        photoUrl: data.photoUrl || this.userData.photoUrl,
+                        achievements: data.achievements || this.userData.achievements,
+                        betHistory: data.betHistory || this.userData.betHistory
+                    };
+                    console.log('Updated user data:', this.userData);
+                } else {
+                    console.log('No existing data found, creating new user');
+                    await this.saveUserData();
+                }
+            } catch (error) {
+                console.error('Error loading data from Firebase:', error);
+                // Continue with default data
                 await this.saveUserData();
             }
 
@@ -101,8 +119,13 @@ class User {
                 dataVersion: this.DATA_VERSION
             };
 
+            console.log('Saving to Firebase:', userDataForFirebase);
             await database.ref(`users/${this.userId}`).set(userDataForFirebase);
-            console.log('User data saved to Firebase');
+            console.log('User data saved successfully');
+
+            // Verify the save
+            const snapshot = await database.ref(`users/${this.userId}`).once('value');
+            console.log('Verification - Data in Firebase:', snapshot.val());
         } catch (error) {
             console.error('Error saving user data:', error);
         }
